@@ -1,0 +1,293 @@
+# ============================================
+# Django Project .gitignore
+# ============================================
+
+# ============================================
+# 🔐 Environment Variables (গোপন তথ্য)
+# ============================================
+.env
+.env.*
+!.env.example
+*.env
+.env.local
+.env.production
+.env.development
+
+# ============================================
+# 🐍 Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================
+# 🌐 Virtual Environment
+# ============================================
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+.venv*/
+
+# ============================================
+# 🐳 Docker
+# ============================================
+.docker/
+docker-compose.override.yml
+*.pid
+
+# ============================================
+# 🗄️ Database
+# ============================================
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+db.sqlite3
+db.sqlite3-journal
+db.sqlite3-shm
+db.sqlite3-wal
+*.db
+*.db-journal
+
+# PostgreSQL
+*.pgdump
+*.sql.gz
+
+# ============================================
+# 📁 Django Specific
+# ============================================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static
+backups/
+*.backup
+
+# Migrations (Optional - uncomment if needed)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# ============================================
+# 📊 Static & Media Files
+# ============================================
+staticfiles/
+media/
+mediafiles/
+*.log
+
+# ============================================
+# 🔴 Redis
+# ============================================
+dump.rdb
+*.rdb
+appendonly.aof
+appendonly.aof.*
+redis-starter.pid
+
+# ============================================
+# 🐰 Celery
+# ============================================
+celerybeat-schedule
+celerybeat.pid
+celerybeat-schedule.*
+*.pid
+celeryd.pid
+celeryd.log
+
+# ============================================
+# 📧 Email & Logs
+# ============================================
+*.log
+logs/
+*.log.*
+
+# ============================================
+# 🧪 Testing
+# ============================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+coverage.xml
+*.coveragerc
+pytest.ini
+
+# ============================================
+# 🖥️ IDE & Editor
+# ============================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# 🖥️ Operating System
+# ============================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ============================================
+# 🔒 Security
+# ============================================
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+secrets/
+*.secret
+
+# ============================================
+# 📦 Compressed Files
+# ============================================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ============================================
+# 🎨 Frontend Build
+# ============================================
+dist/
+build/
+.cache/
+.parcel-cache/
+
+# ============================================
+# 📊 Coverage Reports
+# ============================================
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# ============================================
+# 🔍 Linting & Formatting
+# ============================================
+.flake8
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ============================================
+# 🔐 SSH & Certificates
+# ============================================
+*.pem
+*.key
+*.pub
+
+# ============================================
+# 🗂️ Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.log
+~$*
+
+# ============================================
+# 📝 Project Specific
+# ============================================
+# Celery
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+
+# RabbitMQ
+*.pid
+*.rabbitmq
+
+# SSLCommerz
+sslcommerz.log
+
+# Ngrok
+ngrok
+.ngrok
+
+# ============================================
+# 🎯 Keep These Files
+# ============================================
+!.gitkeep
+!.env.example
+!requirements.txt
+!manage.py
+!docker-compose.yml
+!Dockerfile

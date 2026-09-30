@@ -1,0 +1,945 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সুবাস বেকারি — হাতে তৈরি কেক ও ডেজার্ট</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/theme.css' %}">
+</head>
+<body>
+{% csrf_token %}
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"><span>🍰</span></div>
+      <div>
+        <div class="brand-name">সুবাস বেকারি</div>
+        <div class="brand-tag">Shubash Bakery · Cake House</div>
+      </div>
+    </div>
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchInput" type="text" placeholder="কেক, পেস্ট্রি বা SKU খুঁজুন...">
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="accountBtn">👤 <span class="cart-count-label" id="accountLabel">লগইন</span></button>
+      <button class="icon-btn" id="orderTicketBtn">🧾 <span class="cart-count-label">অর্ডার তালিকা</span> <span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow">প্রতিদিন তাজা বেক করা</div>
+      <h1>প্রতিটি স্লাইসে <em>ভালোবাসার</em> স্বাদ</h1>
+      <p class="lede">ফেনী থেকে সারা চট্টগ্রামে — হাতে তৈরি কেক, পেস্ট্রি আর কাস্টম ডিজাইনের ডেজার্ট, তাজা উপকরণে, আপনার অনুষ্ঠানের জন্য।</p>
+      <div class="hero-ctas">
+        <a href="#catalog" class="btn btn-primary">কালেকশন দেখুন ↓</a>
+        <a href="#customize" class="btn btn-ghost">কাস্টম কেক অর্ডার করুন</a>
+      </div>
+      <div class="hero-stats">
+        <div><b id="statTotal">—</b><span>মোট আইটেম</span></div>
+        <div><b id="statFeatured">—</b><span>ফিচার্ড কালেকশন</span></div>
+        <div><b>৪৫ মি.</b><span>গড় প্রস্তুতি সময়</span></div>
+      </div>
+    </div>
+    <div class="cake-stand" aria-hidden="true">
+      <div class="plate p1"></div><div class="plate p2"></div><div class="plate p3"></div>
+      <div class="stem s1"></div><div class="stem s2"></div>
+      <div class="cake-tier t1"></div><div class="cake-tier t2"></div><div class="cake-tier t3"></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap" id="catalog">
+  <section class="shelf">
+    <div class="shelf-head">
+      <div>
+        <h2>ক্যাটাগরি অনুযায়ী খুঁজুন</h2>
+        <p>আপনার উপলক্ষ অনুযায়ী বেছে নিন</p>
+      </div>
+    </div>
+    <div class="chip-row" id="categoryChips">
+      <button class="chip active" data-category="">
+        <span class="dot">✦</span> সব ক্যাটাগরি
+      </button>
+    </div>
+  </section>
+
+  <div class="tabs" id="tabRow">
+    <button class="tab-btn active" data-tab="all">সব পণ্য</button>
+    <button class="tab-btn" data-tab="featured">✦ ফিচার্ড</button>
+    <button class="tab-btn" data-tab="new_arrivals">নতুন এসেছে</button>
+    <button class="tab-btn" data-tab="best_sellers">সেরা বিক্রিত</button>
+  </div>
+
+  <section class="grid-section">
+    <div class="product-grid" id="productGrid">
+      <!-- skeletons / products injected here -->
+    </div>
+    <div class="state-msg" id="emptyState" style="display:none;">
+      <div class="glyph">🍪</div>
+      <div>কোনো পণ্য পাওয়া যায়নি। অন্য ক্যাটাগরি বা সার্চ চেষ্টা করুন।</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <h3>সুবাস বেকারি</h3>
+      <p>ফেনী, চট্টগ্রাম বিভাগ — ২০১৮ সাল থেকে হাতে তৈরি কেক ও ডেজার্ট, একই দিনে ডেলিভারি সুবিধাসহ।</p>
+    </div>
+    <div>
+      <h3>দ্রুত লিংক</h3>
+      <ul>
+        <li><a href="#catalog">কালেকশন</a></li>
+        <li><a href="#customize">কাস্টম কেক</a></li>
+        <li><a href="#">ডেলিভারি এলাকা</a></li>
+        <li><a href="#">যোগাযোগ</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>যোগাযোগ</h3>
+      <ul>
+        <li>ফেনী, চট্টগ্রাম, বাংলাদেশ</li>
+        <li>খোলা: সকাল ৯টা – রাত ৯টা</li>
+        <li>প্রি-অর্ডার: ২৪ ঘন্টা আগে</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© ২০২৬ সুবাস বেকারি। সর্বস্বত্ব সংরক্ষিত।</span>
+    <span id="apiStatus" class="mono">API: checking…</span>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="cart-drawer-overlay" id="cartDrawerOverlay">
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+      <h3>🧾 আপনার অর্ডার তালিকা</h3>
+      <button class="modal-close" id="cartDrawerClose" aria-label="বন্ধ করুন">×</button>
+    </div>
+    <div class="cart-items" id="cartItemsList"></div>
+    <div class="cart-drawer-foot" id="cartDrawerFoot"></div>
+  </aside>
+</div>
+
+<script src="{% static 'js/api-core.js' %}"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================
+     CONFIG
+     Set API_BASE to your Django host if the frontend
+     is served from a different origin, e.g. 'http://127.0.0.1:8000'.
+     Leave empty '' when this file is served by/alongside Django.
+  ============================================ */
+  const API_BASE = '';
+
+  const els = {
+    grid: document.getElementById('productGrid'),
+    empty: document.getElementById('emptyState'),
+    chips: document.getElementById('categoryChips'),
+    tabs: document.getElementById('tabRow'),
+    search: document.getElementById('searchInput'),
+    statTotal: document.getElementById('statTotal'),
+    statFeatured: document.getElementById('statFeatured'),
+    apiStatus: document.getElementById('apiStatus'),
+    modalOverlay: document.getElementById('modalOverlay'),
+    modalContent: document.getElementById('modalContent'),
+    cartCount: document.getElementById('cartCount'),
+    cartDrawerOverlay: document.getElementById('cartDrawerOverlay'),
+    cartDrawerClose: document.getElementById('cartDrawerClose'),
+    cartItemsList: document.getElementById('cartItemsList'),
+    cartDrawerFoot: document.getElementById('cartDrawerFoot'),
+    orderTicketBtn: document.getElementById('orderTicketBtn'),
+    accountBtn: document.getElementById('accountBtn'),
+    accountLabel: document.getElementById('accountLabel'),
+  };
+
+  const state = {
+    tab: 'all',
+    category: '',
+    search: '',
+    categories: [],
+    cart: null,
+    usingDemoData: false,
+    usingDemoCart: false,
+  };
+
+  /* ---------------- helpers ---------------- */
+  const taka = (v) => '৳' + Number(v || 0).toLocaleString('en-US', {maximumFractionDigits: 2});
+
+  function debounce(fn, ms){
+    let t;
+    return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  }
+
+  /* apiGet / apiPost / apiPatch / apiDelete / getCookie / AuthStore are
+     provided globally by static/js/api-core.js (loaded above this
+     script). They already attach the JWT Authorization header, the
+     Django CSRF header for mutations, and auto-retry once via token
+     refresh on a 401 — no need to redefine any of that here. */
+
+  /* ---------------- demo fallback data ----------------
+     Shown only if the Django API is unreachable, so the
+     storefront still looks complete during preview.
+  ------------------------------------------------------- */
+  const DEMO_CATEGORIES = [
+    {id:'c1', name:'চকলেট কেক', slug:'chocolate-cake'},
+    {id:'c2', name:'ফ্রুট কেক', slug:'fruit-cake'},
+    {id:'c3', name:'পেস্ট্রি', slug:'pastry'},
+    {id:'c4', name:'কুকিজ', slug:'cookies'},
+    {id:'c5', name:'কাস্টম ডিজাইন', slug:'custom'},
+  ];
+
+  function demoProducts(){
+    const base = [
+      ['ডার্ক চকলেট ট্রাফল কেক','c1','chocolate-cake', 1450, 1250, true, false, true, 4, 6],
+      ['রেড ভেলভেট স্লাইস','c1','chocolate-cake', 380, null, false, true, true, 22, 6],
+      ['ম্যাংগো ফ্রুট গ্যাটো','c2','fruit-cake', 1650, null, true, false, true, 8, 6],
+      ['ব্লুবেরি চিজকেক','c2','fruit-cake', 1200, 999, false, false, true, 0, 5],
+      ['ক্রোয়াসঁ বাটার পেস্ট্রি','c3','pastry', 150, null, false, true, true, 40, 10],
+      ['ড্যানিশ ফ্রুট পেস্ট্রি','c3','pastry', 180, null, false, false, true, 3, 8],
+      ['অ্যালমন্ড বাটার কুকিজ (বক্স)','c4','cookies', 320, 280, false, true, true, 15, 12],
+      ['ওটমিল চকোচিপ কুকিজ','c4','cookies', 290, null, false, false, true, 30, 12],
+      ['থিম কাস্টম ফন্ড্যান্ট কেক','c5','custom', 2800, null, true, false, true, 2, 4],
+      ['ওয়েডিং টায়ার্ড কেক','c5','custom', 6500, null, true, false, false, 0, 4],
+    ];
+    return base.map((b,i) => ({
+      id: 'demo-' + i,
+      name: b[0],
+      sku: 'SB-' + (1000+i),
+      category: b[1],
+      category_name: b[0].includes('কেক') ? DEMO_CATEGORIES.find(c=>c.slug===b[2]).name : DEMO_CATEGORIES.find(c=>c.slug===b[2]).name,
+      category_slug: b[2],
+      price: b[3],
+      discount_price: b[4],
+      final_price: b[4] || b[3],
+      discount_percentage: b[4] ? Math.round((1-b[4]/b[3])*100) : 0,
+      quantity: b[8],
+      min_stock_level: 5,
+      is_low_stock: b[8] > 0 && b[8] <= 5,
+      is_out_of_stock: b[8] === 0,
+      is_featured: b[5],
+      is_new: b[6],
+      is_available: b[7],
+      is_best_seller: i % 3 === 0,
+      description: 'প্রিমিয়াম উপকরণে তৈরি, তাজা ও সুস্বাদু — আপনার বিশেষ মুহূর্তকে আরও মধুর করতে।',
+      preparation_time: b[9] * 15,
+      serving_size: b[9] + ' জনের জন্য',
+      main_image: '',
+      ingredients_list: ['ময়দা','মাখন','চিনি','ডিম','ভ্যানিলা এসেন্স'],
+      weight: (0.5 + i * 0.3).toFixed(2),
+      dimensions: `${8+i} x ${4+i} x 3 inches`,
+      delivery_charge: i % 4 === 0 ? 0 : 120 + i * 10,
+      is_free_delivery: i % 4 === 0,
+      customization_options: b[5] ? {flavors:['ভ্যানিলা','চকলেট','স্ট্রবেরি'], sizes:['৮ ইঞ্চি','১০ ইঞ্চি','১২ ইঞ্চি']} : {},
+    }));
+  }
+
+  /* ---------------- cart store ----------------
+     Talks to /api/cart/*. If the backend is unreachable
+     (e.g. this preview), falls back to an in-memory demo
+     cart built from demoProducts() with the exact same
+     response shape, so the UI code never needs to branch.
+  ------------------------------------------------------- */
+  let demoCartItems = [];
+
+  function demoCartSnapshot(){
+    const items = demoCartItems.map(ci => {
+      const product = demoProducts().find(p => p.id === ci.product) || {};
+      const currentPrice = Number(product.final_price ?? ci.unit_price);
+      return {
+        id: ci.id,
+        product: ci.product,
+        product_detail: product,
+        quantity: ci.quantity,
+        unit_price: ci.unit_price,
+        current_unit_price: currentPrice,
+        price_changed: Number(ci.unit_price) !== currentPrice,
+        customization: ci.customization || {},
+        note: ci.note || '',
+        line_total: Number(ci.unit_price) * ci.quantity,
+        stock_issue: !!product.is_out_of_stock || (product.quantity ?? 0) < ci.quantity,
+        max_available_quantity: product.quantity ?? 0,
+        added_at: ci.added_at,
+        updated_at: ci.updated_at || ci.added_at,
+      };
+    });
+
+    const subtotal = items.reduce((s, i) => s + i.line_total, 0);
+    let delivery_total = 0;
+    const seen = new Set();
+    items.forEach(i => {
+      if(seen.has(i.product)) return;
+      seen.add(i.product);
+      if(i.product_detail && !i.product_detail.is_free_delivery){
+        delivery_total += Number(i.product_detail.delivery_charge || 0);
+      }
+    });
+
+    return {
+      id: 'demo-cart',
+      items,
+      total_items: items.reduce((s, i) => s + i.quantity, 0),
+      total_lines: items.length,
+      subtotal,
+      delivery_total,
+      grand_total: subtotal + delivery_total,
+      has_price_changes: items.some(i => i.price_changed),
+      has_stock_issues: items.some(i => i.stock_issue),
+      is_empty: items.length === 0,
+    };
+  }
+
+  async function fetchCart(){
+    try{
+      const data = await apiGet('/api/cart/');
+      state.usingDemoCart = false;
+      state.cart = data.data;
+    }catch(e){
+      state.usingDemoCart = true;
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+  }
+
+  async function addToCart(productId, quantity, customization, note){
+    quantity = quantity || 1;
+    customization = customization || {};
+    note = note || '';
+    try{
+      const data = await apiPost('/api/cart/add_item/', {product_id: productId, quantity, customization, note});
+      state.usingDemoCart = false;
+      state.cart = data.data;
+    }catch(e){
+      console.error('addToCart failed:', e);
+      const product = demoProducts().find(p => p.id === productId);
+      if(!product){
+        // This was a real product (came from the live API), not a demo one —
+        // the backend call genuinely failed, so surface it instead of
+        // silently doing nothing.
+        alert('কার্টে যোগ করা যায়নি।\n\nকারণ: ' + (e.message || 'অজানা সমস্যা') +
+              '\n\nব্রাউজারের DevTools > Console/Network ট্যাব চেক করুন বিস্তারিত জানতে।');
+        return;
+      }
+      state.usingDemoCart = true;
+      const existing = demoCartItems.find(ci =>
+        ci.product === productId && JSON.stringify(ci.customization || {}) === JSON.stringify(customization)
+      );
+      const now = new Date().toISOString();
+      if(existing){
+        existing.quantity += quantity;
+        existing.updated_at = now;
+      }else{
+        demoCartItems.push({
+          id: 'ci-' + Date.now() + Math.random().toString(16).slice(2),
+          product: productId, quantity,
+          unit_price: product.final_price, customization, note,
+          added_at: now, updated_at: now,
+        });
+      }
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+    if(els.cartDrawerOverlay.classList.contains('open')) renderCartDrawer();
+  }
+
+  async function updateCartItem(itemId, quantity){
+    try{
+      const data = await apiPatch(`/api/cart/items/${itemId}/`, {quantity});
+      state.cart = data.data;
+    }catch(e){
+      const item = demoCartItems.find(ci => ci.id === itemId);
+      if(item){ item.quantity = quantity; item.updated_at = new Date().toISOString(); }
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+  async function removeCartItem(itemId){
+    try{
+      const data = await apiDelete(`/api/cart/items/${itemId}/`);
+      state.cart = data.data || demoCartSnapshot();
+    }catch(e){
+      demoCartItems = demoCartItems.filter(ci => ci.id !== itemId);
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+  async function clearCart(){
+    try{
+      const data = await apiPost('/api/cart/clear/');
+      state.cart = data.data;
+    }catch(e){
+      demoCartItems = [];
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+  async function syncPrices(){
+    try{
+      const data = await apiPost('/api/cart/sync_prices/');
+      state.cart = data.data;
+    }catch(e){
+      demoCartItems.forEach(ci => {
+        const product = demoProducts().find(p => p.id === ci.product);
+        if(product) ci.unit_price = product.final_price;
+      });
+      state.cart = demoCartSnapshot();
+    }
+    updateCartBadge();
+    renderCartDrawer();
+  }
+
+  function updateCartBadge(){
+    els.cartCount.textContent = state.cart ? state.cart.total_items : 0;
+  }
+
+  /* ---------------- rendering ---------------- */
+  function skeletons(n){
+    els.grid.innerHTML = Array.from({length:n}).map(() => `
+      <div class="card">
+        <div class="card-media skeleton" style="aspect-ratio:4/3;border-radius:16px;margin:0 14px;"></div>
+        <div class="card-body">
+          <div class="skeleton" style="height:11px;width:40%;border-radius:4px;"></div>
+          <div class="skeleton" style="height:16px;width:80%;border-radius:4px;"></div>
+          <div class="skeleton" style="height:14px;width:55%;border-radius:4px;"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function ribbonFor(p){
+    if(p.is_out_of_stock) return '<span class="ribbon out">স্টক শেষ</span>';
+    if(p.is_low_stock) return '<span class="ribbon low">সীমিত স্টক</span>';
+    if(p.is_new) return '<span class="ribbon new">নতুন</span>';
+    if(p.is_best_seller) return '<span class="ribbon best">জনপ্রিয়</span>';
+    return '';
+  }
+
+  function cardTemplate(p){
+    const img = p.main_image
+      ? `<img src="${p.main_image}" alt="${escapeHtml(p.name)}" loading="lazy">`
+      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;">🍰</div>`;
+    return `
+      <article class="card scallop-top" data-id="${p.id}" tabindex="0">
+        <div class="card-media">
+          ${img}
+          ${ribbonFor(p)}
+        </div>
+        <div class="card-body">
+          <div class="card-cat">${escapeHtml(p.category_name || 'ডেজার্ট')}</div>
+          <div class="card-title">${escapeHtml(p.name)}</div>
+          <div class="card-meta">
+            <span class="mono">SKU ${escapeHtml(p.sku || '—')}</span>
+            ${p.serving_size ? `<span>${escapeHtml(p.serving_size)}</span>` : ''}
+          </div>
+          <div class="card-footer">
+            <div class="price-stamp">
+              <span class="now">${taka(p.final_price ?? p.price)}</span>
+              ${p.discount_price ? `<span class="old">${taka(p.price)}</span>` : ''}
+            </div>
+            <button class="add-btn" data-add="${p.id}" ${p.is_out_of_stock ? 'disabled' : ''} aria-label="অর্ডার তালিকায় যোগ করুন">
+              ${p.is_out_of_stock ? '×' : '+'}
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function escapeHtml(s){
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function prettifyKey(k){
+    return String(k).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  /* Renders arbitrary JSON (any nesting depth, mixed objects/arrays/
+     primitives) as a readable indented key: value tree. This is what
+     admin-created customization_options actually looks like in practice
+     — not always a flat {key: [choices]} shape. */
+  function renderCustomizationInfo(val, depth){
+    depth = depth || 0;
+    if(val === null || val === undefined || val === '') return '';
+
+    if(Array.isArray(val)){
+      if(val.every(v => v === null || typeof v !== 'object')){
+        return `<div class="tag-row">${val.map(v => `<span>${escapeHtml(v)}</span>`).join('')}</div>`;
+      }
+      return `<div class="custom-kv-list${depth ? ' nested' : ''}">${val.map(v => renderCustomizationInfo(v, depth + 1)).join('')}</div>`;
+    }
+
+    if(typeof val === 'object'){
+      return `<div class="custom-kv-list${depth ? ' nested' : ''}">${Object.entries(val).map(([k, v]) => {
+        const isLeaf = v === null || typeof v !== 'object' || (Array.isArray(v) && v.length === 0);
+        return `
+          <div class="custom-kv-row">
+            <span class="custom-kv-key">${escapeHtml(prettifyKey(k))}:</span>
+            ${isLeaf ? `<span class="custom-kv-val">${escapeHtml(v)}</span>` : ''}
+          </div>
+          ${!isLeaf ? renderCustomizationInfo(v, depth + 1) : ''}
+        `;
+      }).join('')}</div>`;
+    }
+
+    return `<span class="custom-kv-val">${escapeHtml(val)}</span>`;
+  }
+
+  /* Builds a clean select-per-category form from customization_options,
+     regardless of whether admin stored plain choice arrays
+     (e.g. {"flavors": ["Chocolate","Vanilla"]}) or nested objects
+     (e.g. {"Flavour": {"heavy_cream": "2 cups", ...}}). In the object
+     case, the sub-keys become the selectable options for that category. */
+  function buildCustomizeSelects(options){
+    const groups = Object.entries(options).map(([key, val]) => {
+      let choices = null;
+      if(Array.isArray(val) && val.length && val.every(x => x !== null && typeof x !== 'object')){
+        choices = val.map(v => ({ value: v, label: v }));
+      }else if(val && typeof val === 'object' && !Array.isArray(val) && Object.keys(val).length){
+        choices = Object.keys(val).map(k => ({ value: k, label: prettifyKey(k) }));
+      }
+      if(!choices) return '';
+      return `
+        <div class="custom-select-group">
+          <div class="custom-select-label">${escapeHtml(prettifyKey(key))}</div>
+          <select class="custom-select" data-custom-key="${escapeHtml(key)}">
+            <option value="">নির্বাচন করুন (ঐচ্ছিক)</option>
+            ${choices.map(c => `<option value="${escapeHtml(c.value)}">${escapeHtml(c.label)}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    }).filter(Boolean);
+    return groups.join('');
+  }
+
+  /* Top-level primitive fields (plain strings/numbers, e.g. "recipe":
+     "Chocolate Shake") aren't selectable — shown as simple info lines
+     above the form instead of being silently dropped. */
+  function buildCustomizeInfoLines(options){
+    const lines = Object.entries(options).filter(([, v]) => v !== null && v !== '' && typeof v !== 'object');
+    if(!lines.length) return '';
+    return `<div style="margin-bottom:10px;">${lines.map(([k, v]) => `
+      <div class="custom-select-label" style="margin-bottom:3px;">${escapeHtml(prettifyKey(k))}: <strong style="color:var(--text-dark);font-family:inherit;">${escapeHtml(v)}</strong></div>
+    `).join('')}</div>`;
+  }
+
+  function renderProducts(list){
+    if(!list.length){
+      els.grid.innerHTML = '';
+      els.empty.style.display = 'block';
+      return;
+    }
+    els.empty.style.display = 'none';
+    els.grid.innerHTML = list.map(cardTemplate).join('');
+  }
+
+  function renderCategoryChips(cats){
+    const rest = cats.map(c => `
+      <button class="chip" data-category="${c.id}">
+        <span class="dot">🍰</span> ${escapeHtml(c.name)}
+      </button>
+    `).join('');
+    els.chips.innerHTML = `
+      <button class="chip ${state.category === '' ? 'active' : ''}" data-category="">
+        <span class="dot">✦</span> সব ক্যাটাগরি
+      </button>
+    ` + rest;
+  }
+
+  function cartItemTemplate(item){
+    const p = item.product_detail || {};
+    const thumb = p.main_image
+      ? `<img src="${p.main_image}" alt="${escapeHtml(p.name || '')}">`
+      : '<span>🍰</span>';
+    const tags = Object.entries(item.customization || {}).map(([, v]) => `<span>${escapeHtml(v)}</span>`).join('');
+    return `
+      <div class="cart-item-card" data-item-id="${item.id}">
+        <div class="cart-item-thumb">${thumb}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${escapeHtml(p.name || 'পণ্য')}</div>
+          ${tags ? `<div class="cart-item-tags">${tags}</div>` : ''}
+          ${item.note ? `<div class="cart-item-note">📝 ${escapeHtml(item.note)}</div>` : ''}
+          ${item.price_changed ? `<div class="cart-item-warn price">💰 নতুন দাম ${taka(item.current_unit_price)}</div>` : ''}
+          ${item.stock_issue ? `<div class="cart-item-warn stock">⚠️ পর্যাপ্ত স্টক নেই</div>` : ''}
+          <div class="cart-item-row-bottom">
+            <div class="qty-stepper">
+              <button data-qty-minus="${item.id}" aria-label="কমান">−</button>
+              <span>${item.quantity}</span>
+              <button data-qty-plus="${item.id}" aria-label="বাড়ান">+</button>
+            </div>
+            <div class="cart-item-price">${taka(item.line_total)}</div>
+          </div>
+          <button class="cart-item-remove" data-remove="${item.id}">সরিয়ে ফেলুন</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderCartDrawer(){
+    const cart = state.cart;
+    if(!cart || cart.is_empty){
+      els.cartItemsList.innerHTML = `
+        <div class="cart-empty">
+          <div class="glyph">🛒</div>
+          এখনো কিছু যোগ করা হয়নি।<br>পছন্দের কেক বা ডেজার্ট বেছে নিন!
+        </div>`;
+      els.cartDrawerFoot.innerHTML = '';
+      return;
+    }
+
+    els.cartItemsList.innerHTML = cart.items.map(cartItemTemplate).join('');
+    els.cartDrawerFoot.innerHTML = `
+      ${cart.has_stock_issues ? `<div class="cart-warn-banner">⚠️ কিছু আইটেমের পর্যাপ্ত স্টক নেই, quantity ঠিক করুন।</div>` : ''}
+      ${cart.has_price_changes ? `<div class="cart-warn-banner">💰 কিছু আইটেমের দাম বদলেছে। <button id="syncPricesBtn">দাম আপডেট করুন</button></div>` : ''}
+      <div class="cart-total-row"><span>সাবটোটাল</span><span class="mono">${taka(cart.subtotal)}</span></div>
+      <div class="cart-total-row"><span>ডেলিভারি চার্জ</span><span class="mono">${taka(cart.delivery_total)}</span></div>
+      <div class="cart-total-row grand"><span>সর্বমোট</span><span class="mono">${taka(cart.grand_total)}</span></div>
+      <button class="btn btn-primary cart-btn-outline" id="clearCartBtn">কার্ট খালি করুন</button>
+      <button class="btn btn-primary" id="checkoutBtn" style="width:100%;justify-content:center;margin-top:10px;">চেকআউট করুন (${cart.total_items} আইটেম)</button>
+    `;
+
+    const syncBtn = document.getElementById('syncPricesBtn');
+    if(syncBtn) syncBtn.addEventListener('click', syncPrices);
+    document.getElementById('clearCartBtn').addEventListener('click', clearCart);
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      alert('চেকআউট সিস্টেম শীঘ্রই যুক্ত হবে। আপাতত আপনার কার্ট প্রস্তুত আছে ✓');
+    });
+  }
+
+  function openCartDrawer(){
+    els.cartDrawerOverlay.classList.add('open');
+    renderCartDrawer();
+    fetchCart().then(renderCartDrawer);
+  }
+
+  function closeCartDrawer(){
+    els.cartDrawerOverlay.classList.remove('open');
+  }
+  /* ---------------- data loading ---------------- */
+  async function loadCategories(){
+    try{
+      const data = await apiGet('/api/categories/');
+      const list = Array.isArray(data) ? data : (data.results || []);
+      state.categories = list.length ? list : DEMO_CATEGORIES;
+    }catch(e){
+      state.categories = DEMO_CATEGORIES;
+    }
+    renderCategoryChips(state.categories);
+  }
+
+  function endpointForTab(tab){
+    switch(tab){
+      case 'featured': return '/api/products/featured/';
+      case 'new_arrivals': return '/api/products/new_arrivals/';
+      case 'best_sellers': return '/api/products/best_sellers/';
+      default: return '/api/products/';
+    }
+  }
+
+  async function loadProducts(){
+    skeletons(8);
+    const params = new URLSearchParams();
+    if(state.search) params.set('search', state.search);
+    if(state.category) params.set('category', state.category);
+    const base = endpointForTab(state.tab);
+    const path = base + (base.includes('?') ? '&' : '?') + params.toString();
+
+    try{
+      const data = await apiGet(path.replace(/\?$/, ''));
+      let list = Array.isArray(data) ? data : (data.results || []);
+      state.usingDemoData = false;
+      els.apiStatus.textContent = 'API: সংযুক্ত ✓';
+      renderProducts(list);
+      updateStats(list, data.count);
+    }catch(e){
+      // Fallback to demo data so the storefront still demonstrates fully
+      state.usingDemoData = true;
+      els.apiStatus.textContent = 'API: ডেমো মোড (ব্যাকএন্ড সংযুক্ত নয়)';
+      let list = demoProducts();
+      if(state.tab === 'featured') list = list.filter(p => p.is_featured);
+      if(state.tab === 'new_arrivals') list = list.filter(p => p.is_new);
+      if(state.tab === 'best_sellers') list = list.filter(p => p.is_best_seller);
+      if(state.category) list = list.filter(p => p.category === state.category);
+      if(state.search) list = list.filter(p => p.name.includes(state.search) || (p.sku||'').toLowerCase().includes(state.search.toLowerCase()));
+      renderProducts(list);
+      updateStats(list, list.length);
+    }
+  }
+
+  function updateStats(list, count){
+    els.statTotal.textContent = (count ?? list.length ?? 0).toLocaleString('en-US');
+    els.statFeatured.textContent = list.filter(p => p.is_featured).length || '—';
+  }
+
+  /* ---------------- product detail modal ---------------- */
+  async function openProduct(id){
+    els.modalOverlay.classList.add('open');
+    els.modalContent.innerHTML = `<div style="padding:60px;text-align:center;grid-column:1/-1;">লোড হচ্ছে…</div>`;
+
+    let product, related = [];
+    if(state.usingDemoData || String(id).startsWith('demo-')){
+      product = demoProducts().find(p => p.id === id);
+      related = demoProducts().filter(p => p.category_slug === product.category_slug && p.id !== id).slice(0,4);
+    } else {
+      try{
+        const data = await apiGet(`/api/products/${id}/`);
+        product = data.data ? data.data.product : data;
+        related = data.data ? data.data.related_products : [];
+      }catch(e){
+        product = demoProducts()[0];
+      }
+    }
+    renderModal(product, related);
+  }
+
+  function renderModal(p, related){
+    const stockColor = p.is_out_of_stock ? '#5b5b5b' : (p.is_low_stock ? 'var(--berry)' : 'var(--pistachio)');
+    const stockText = p.is_out_of_stock ? 'স্টক শেষ' : (p.is_low_stock ? `সীমিত স্টক (${p.quantity} টি বাকি)` : `স্টকে আছে (${p.quantity} টি)`);
+    const img = p.main_image
+      ? `<img src="${p.main_image}" alt="${escapeHtml(p.name)}">`
+      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:64px;">🍰</div>`;
+
+    els.modalContent.innerHTML = `
+      <button class="modal-close" id="modalCloseBtn" aria-label="বন্ধ করুন">×</button>
+      <div class="modal-media">${img}</div>
+      <div class="modal-body">
+        <div class="card-cat">${escapeHtml(p.category_name || 'ডেজার্ট')}</div>
+        <h2>${escapeHtml(p.name)}</h2>
+        <div class="modal-price">
+          <span class="now">${taka(p.final_price ?? p.price)}</span>
+          ${p.discount_price ? `<span class="old">${taka(p.price)}</span>` : ''}
+        </div>
+        <div class="stock-line"><span class="stock-dot" style="background:${stockColor};"></span>${stockText}</div>
+        <p class="modal-desc">${escapeHtml(p.description || 'বিস্তারিত বিবরণ শীঘ্রই যোগ করা হবে।')}</p>
+        <div class="tag-row">
+          ${p.serving_size ? `<span>👥 ${escapeHtml(p.serving_size)}</span>` : ''}
+          ${p.preparation_time ? `<span>⏱ ${p.preparation_time} মিনিট প্রস্তুতি</span>` : ''}
+          <span class="mono">SKU ${escapeHtml(p.sku || '—')}</span>
+          ${p.is_customizable ? `<span>🎨 কাস্টমাইজযোগ্য</span>` : ''}
+        </div>
+        ${(p.ingredients_list && p.ingredients_list.length) ? `
+          <div>
+            <h3 style="font-size:13px;color:var(--berry);margin-bottom:6px;">উপকরণ</h3>
+            <div class="tag-row">${p.ingredients_list.map(i => `<span>${escapeHtml(i)}</span>`).join('')}</div>
+          </div>` : ''}
+        ${(p.customization_options && Object.keys(p.customization_options).length) ? `
+          <div id="customizeBlock">
+            <h3 style="font-size:13px;color:var(--berry);margin-bottom:8px;">কাস্টমাইজ করুন</h3>
+            ${buildCustomizeInfoLines(p.customization_options)}
+            ${buildCustomizeSelects(p.customization_options)}
+          </div>` : ''}
+        <div class="ship-box">
+          <h3 style="font-size:13px;color:var(--berry);margin-bottom:8px;">ডেলিভারি ও শিপিং তথ্য</h3>
+          <div class="ship-grid">
+            ${p.weight ? `
+              <div class="ship-item">
+                <span class="ship-ico">⚖️</span>
+                <div><div class="ship-label">ওজন</div><div class="ship-val mono">${escapeHtml(String(p.weight))} কেজি</div></div>
+              </div>` : ''}
+            ${p.dimensions ? `
+              <div class="ship-item">
+                <span class="ship-ico">📐</span>
+                <div><div class="ship-label">মাপ (L × W × H)</div><div class="ship-val mono">${escapeHtml(String(p.dimensions).replace(/^"|"$/g,'').replace(/,+$/,''))}</div></div>
+              </div>` : ''}
+            <div class="ship-item">
+              <span class="ship-ico">🚚</span>
+              <div>
+                <div class="ship-label">ডেলিভারি চার্জ</div>
+                <div class="ship-val mono">
+                  ${p.is_free_delivery ? '<span class="free-badge">ফ্রি ডেলিভারি</span>' : taka(p.delivery_charge)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-qty-row">
+          <div class="qty-stepper" id="modalQtyStepper" style="transform:scale(1.15); transform-origin:left;">
+            <button type="button" data-modal-qty-minus aria-label="কমান">−</button>
+            <span id="modalQtyValue">1</span>
+            <button type="button" data-modal-qty-plus aria-label="বাড়ান">+</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="justify-content:center;margin-top:2px;" ${p.is_out_of_stock ? 'disabled' : ''} id="modalAddBtn">
+          অর্ডার তালিকায় যোগ করুন — ${taka(p.final_price ?? p.price)}
+        </button>
+        ${related && related.length ? `
+          <div>
+            <h3 style="font-size:13px;color:var(--berry);margin-bottom:8px;">সম্পর্কিত পণ্য</h3>
+            <div class="related-row">
+              ${related.map(r => `
+                <div class="related-chip" data-related="${r.id}" style="cursor:pointer;">
+                  <div class="thumb">${r.main_image ? `<img src="${r.main_image}" alt="">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;">🍩</div>'}</div>
+                  <div>${escapeHtml(r.name)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>` : ''}
+      </div>
+    `;
+
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+
+    let modalQty = 1;
+    const qtyValueEl = document.getElementById('modalQtyValue');
+    const stepper = document.getElementById('modalQtyStepper');
+    if(stepper){
+      stepper.querySelector('[data-modal-qty-plus]').addEventListener('click', () => {
+        if(p.quantity && modalQty >= p.quantity) return;
+        modalQty += 1;
+        qtyValueEl.textContent = modalQty;
+      });
+      stepper.querySelector('[data-modal-qty-minus]').addEventListener('click', () => {
+        if(modalQty <= 1) return;
+        modalQty -= 1;
+        qtyValueEl.textContent = modalQty;
+      });
+    }
+
+    const addBtn = document.getElementById('modalAddBtn');
+    if(addBtn){
+      addBtn.addEventListener('click', async () => {
+        const customization = {};
+        els.modalContent.querySelectorAll('[data-custom-key]').forEach(sel => {
+          if(sel.value) customization[sel.getAttribute('data-custom-key')] = sel.value;
+        });
+        addBtn.disabled = true;
+        const original = addBtn.textContent;
+        addBtn.textContent = 'যোগ হচ্ছে…';
+        await addToCart(p.id, modalQty, customization, '');
+        addBtn.textContent = '✓ কার্টে যোগ হয়েছে';
+        setTimeout(() => { addBtn.textContent = original; addBtn.disabled = p.is_out_of_stock; }, 1000);
+      });
+    }
+
+    els.modalContent.querySelectorAll('[data-related]').forEach(el => {
+      el.addEventListener('click', () => openProduct(el.getAttribute('data-related')));
+    });
+  }
+
+  function closeModal(){
+    els.modalOverlay.classList.remove('open');
+  }
+
+  /* ---------------- events ---------------- */
+  els.grid.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('[data-add]');
+    if(addBtn){
+      e.stopPropagation();
+      if(addBtn.disabled) return;
+      const id = addBtn.getAttribute('data-add');
+      addBtn.disabled = true;
+      addToCart(id, 1, {}, '').then(() => {
+        addBtn.textContent = '✓';
+        setTimeout(() => { addBtn.textContent = '+'; addBtn.disabled = false; }, 700);
+      });
+      return;
+    }
+    const card = e.target.closest('.card');
+    if(card) openProduct(card.getAttribute('data-id'));
+  });
+
+  els.grid.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter'){
+      const card = e.target.closest('.card');
+      if(card) openProduct(card.getAttribute('data-id'));
+    }
+  });
+
+  els.chips.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    els.chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.category = chip.getAttribute('data-category') || '';
+    loadProducts();
+  });
+
+  els.tabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if(!btn) return;
+    els.tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.tab = btn.getAttribute('data-tab');
+    loadProducts();
+  });
+
+  els.search.addEventListener('input', debounce((e) => {
+    state.search = e.target.value.trim();
+    loadProducts();
+  }, 400));
+
+  els.modalOverlay.addEventListener('click', (e) => {
+    if(e.target === els.modalOverlay) closeModal();
+  });
+
+  els.orderTicketBtn.addEventListener('click', openCartDrawer);
+  els.cartDrawerClose.addEventListener('click', closeCartDrawer);
+  els.cartDrawerOverlay.addEventListener('click', (e) => {
+    if(e.target === els.cartDrawerOverlay) closeCartDrawer();
+  });
+
+  // Login/account is a separate page — not a drawer on the home page.
+  els.accountBtn.addEventListener('click', () => { window.location.href = '/login/'; });
+
+  els.cartItemsList.addEventListener('click', (e) => {
+    const plus = e.target.closest('[data-qty-plus]');
+    const minus = e.target.closest('[data-qty-minus]');
+    const remove = e.target.closest('[data-remove]');
+    if(plus){
+      const id = plus.getAttribute('data-qty-plus');
+      const item = state.cart.items.find(i => i.id === id);
+      if(item) updateCartItem(id, item.quantity + 1);
+    }else if(minus){
+      const id = minus.getAttribute('data-qty-minus');
+      const item = state.cart.items.find(i => i.id === id);
+      if(item){
+        if(item.quantity <= 1) removeCartItem(id);
+        else updateCartItem(id, item.quantity - 1);
+      }
+    }else if(remove){
+      removeCartItem(remove.getAttribute('data-remove'));
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){ closeModal(); closeCartDrawer(); }
+  });
+
+  function updateAccountLabelFromStore(){
+    const user = AuthStore.get().user;
+    els.accountLabel.textContent = user ? (user.full_name || user.username || 'অ্যাকাউন্ট').split(' ')[0] : 'লগইন';
+  }
+
+  /* ---------------- init ---------------- */
+  (async function init(){
+    els.apiStatus.textContent = 'API: সংযোগ পরীক্ষা হচ্ছে…';
+    updateAccountLabelFromStore();
+    await loadCategories();
+    await loadProducts();
+    await fetchCart();
+  })();
+})();
+</script>
+</body>
+</html>

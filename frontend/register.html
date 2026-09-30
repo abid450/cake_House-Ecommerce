@@ -1,0 +1,864 @@
+<!-- templates/auth/register.html -->
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রেজিস্টার — সুবাস বেকারি</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        :root {
+            --bg-dark: #2A1620;
+            --bg-dark-2: #3B1E2A;
+            --bg-cream: #FAF1E2;
+            --surface: #FFFDF9;
+            --berry: #8E2E3B;
+            --berry-deep: #6E1F2A;
+            --berry-light: #C15C68;
+            --gold: #C79A4B;
+            --gold-deep: #A9812F;
+            --gold-soft: #EAD3A0;
+            --pistachio: #7C9473;
+            --text-dark: #2A1620;
+            --text-light: #F8EEDF;
+            --line: rgba(42, 22, 32, 0.12);
+            --line-light: rgba(248, 238, 223, 0.16);
+            --shadow: 0 18px 40px -20px rgba(42, 22, 32, 0.35);
+            --shadow-warm: 0 20px 36px -18px rgba(142, 46, 59, 0.28);
+            --radius-card: 22px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Noto Serif Bengali', serif;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        /* ============================================
+           AUTH CONTAINER
+        ============================================ */
+        .auth-container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            padding: 40px 35px;
+            box-shadow: var(--shadow-warm);
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .auth-container::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199, 154, 75, 0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-container .scallop-top {
+            position: relative;
+        }
+        .auth-container .scallop-top::before {
+            content: "";
+            position: absolute;
+            top: -11px;
+            left: 0;
+            right: 0;
+            height: 22px;
+            background: radial-gradient(circle at 11px 11px, transparent 10.5px, var(--surface) 11px);
+            background-size: 22px 22px;
+            background-repeat: repeat-x;
+        }
+
+        /* ============================================
+           LOGO
+        ============================================ */
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .auth-logo .brand-mark {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: conic-gradient(from 210deg, var(--gold), var(--berry-light), var(--pistachio), var(--gold));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 3px var(--bg-dark), 0 0 0 4px var(--gold-soft);
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .auth-logo h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .auth-logo h1 span {
+            color: var(--berry);
+        }
+
+        .auth-logo p {
+            color: rgba(42, 22, 32, 0.55);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ============================================
+           ALERT
+        ============================================ */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        .alert.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+
+        .alert.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+
+        .alert.info {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            display: block;
+        }
+
+        /* ============================================
+           FORM
+        ============================================ */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(42, 22, 32, 0.4);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-dark);
+            background: var(--bg-cream);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group .input-wrapper input:focus {
+            border-color: var(--berry);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(142, 46, 59, 0.08);
+        }
+
+        .form-group .input-wrapper input::placeholder {
+            color: rgba(42, 22, 32, 0.35);
+        }
+
+        .form-group .input-wrapper .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(42, 22, 32, 0.35);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .form-group .input-wrapper .toggle-password:hover {
+            color: var(--text-dark);
+        }
+
+        .form-group .error-text {
+            display: none;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 6px;
+            padding-left: 4px;
+        }
+
+        .form-group .error-text.show {
+            display: block;
+        }
+
+        .form-group input.is-invalid {
+            border-color: #dc2626 !important;
+            background: #fef2f2 !important;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
+        }
+
+        .form-group input.is-valid {
+            border-color: var(--pistachio) !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.08) !important;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group .helper-text {
+            font-size: 12px;
+            color: rgba(42, 22, 32, 0.45);
+            margin-top: 4px;
+        }
+
+        .form-group .helper-text i {
+            margin-right: 4px;
+        }
+
+        /* ============================================
+           BUTTON
+        ============================================ */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--berry) 0%, var(--berry-deep) 100%);
+            color: var(--text-light);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(142, 46, 59, 0.35);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-submit .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-submit.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-submit.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .auth-footer p {
+            color: rgba(42, 22, 32, 0.55);
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: var(--berry);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .auth-footer a:hover {
+            color: var(--berry-deep);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           TERMS
+        ============================================ */
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 16px 0 20px;
+            font-size: 13px;
+            color: rgba(42, 22, 32, 0.6);
+        }
+
+        .terms input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--berry);
+            margin-top: 2px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .terms a {
+            color: var(--berry);
+            font-weight: 600;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 500px) {
+            .auth-container {
+                padding: 28px 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .auth-logo h1 {
+                font-size: 22px;
+            }
+            .btn-submit {
+                font-size: 15px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container scallop-top">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            <div class="brand-mark">🍰</div>
+            <h1>সুবাস <span>বেকারি</span></h1>
+            <p>নতুন অ্যাকাউন্ট তৈরি করুন</p>
+        </div>
+
+        <!-- Alert -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Register Form -->
+        <form id="registerForm" novalidate>
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label>পূর্ণ নাম <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="full_name" placeholder="আপনার পূর্ণ নাম" autocomplete="name">
+                </div>
+                <div class="error-text" id="fullNameError"></div>
+            </div>
+
+            <!-- Username & Email -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ইউজারনেম <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-tag input-icon"></i>
+                        <input type="text" id="username" placeholder="ইউজারনেম" autocomplete="username">
+                    </div>
+                    <div class="error-text" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label>ইমেইল <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+                    </div>
+                    <div class="error-text" id="emailError"></div>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>পাসওয়ার্ড <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" placeholder="পাসওয়ার্ড" autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-text" id="passwordError"></div>
+                    <div class="helper-text"><i class="fas fa-info-circle"></i> কমপক্ষে ৮ অক্ষর হতে হবে</div>
+                </div>
+                <div class="form-group">
+                    <label>পাসওয়ার্ড নিশ্চিত করুন <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-check-circle input-icon"></i>
+                        <input type="password" id="password2" placeholder="পুনরায় পাসওয়ার্ড" autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password2', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="error-text" id="password2Error"></div>
+                </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+                <label>মোবাইল নম্বর</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="phone" placeholder="017XXXXXXXX" autocomplete="tel">
+                </div>
+                <div class="error-text" id="phoneError"></div>
+                <div class="helper-text"><i class="fas fa-info-circle"></i> ঐচ্ছিক — দিলে সঠিক ফরম্যাটে দিন (যেমন 01712345678)</div>
+            </div>
+
+            <!-- Terms -->
+            <div class="terms">
+                <input type="checkbox" id="terms" checked>
+                <label for="terms">
+                    আমি <a href="/terms/">সেবার শর্তাবলী</a> এবং <a href="/privacy/">গোপনীয়তা নীতি</a> মেনে চলতে সম্মতি জানাচ্ছি।
+                </label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <span class="spinner"></span>
+                <span class="btn-text"><i class="fas fa-user-plus"></i> একাউন্ট তৈরি করুন</span>
+            </button>
+
+        </form>
+
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="/login/">লগইন করুন</a></p>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // DOM Elements
+        // ============================================
+        const form = document.getElementById('registerForm');
+        const fullName = document.getElementById('full_name');
+        const username = document.getElementById('username');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const password2 = document.getElementById('password2');
+        const phone = document.getElementById('phone');
+        const terms = document.getElementById('terms');
+        const submitBtn = document.getElementById('submitBtn');
+        const alertEl = document.getElementById('alert');
+
+        const fullNameError = document.getElementById('fullNameError');
+        const usernameError = document.getElementById('usernameError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const password2Error = document.getElementById('password2Error');
+        const phoneError = document.getElementById('phoneError');
+
+        // Same pattern as the backend's RegexValidator on User.phone —
+        // keep these two in sync if the backend pattern ever changes.
+        const PHONE_REGEX = /^(?:(?:\+?88)?01[3-9]\d{8})$/;
+
+        // ============================================
+        // Toggle Password Visibility
+        // ============================================
+        function togglePassword(fieldId, btn) {
+            const field = document.getElementById(fieldId);
+            const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+            field.setAttribute('type', type);
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
+
+        // ============================================
+        // Show Alert
+        // ============================================
+        function showAlert(message, type = 'error') {
+            alertEl.textContent = message;
+            alertEl.className = `alert ${type}`;
+            alertEl.style.display = 'block';
+            setTimeout(() => { alertEl.style.display = 'none'; }, 5000);
+        }
+
+        // ============================================
+        // Clear Errors
+        // ============================================
+        function clearErrors() {
+            document.querySelectorAll('.form-group input').forEach(input => {
+                input.classList.remove('is-invalid', 'is-valid');
+            });
+            document.querySelectorAll('.error-text').forEach(el => {
+                el.textContent = '';
+                el.classList.remove('show');
+            });
+            alertEl.style.display = 'none';
+        }
+
+        // ============================================
+        // Set Field Error
+        // ============================================
+        function setFieldError(field, errorEl, message) {
+            field.classList.add('is-invalid');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        // ============================================
+        // Validate Form
+        // ============================================
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+
+            // Full Name
+            if (!fullName.value.trim()) {
+                setFieldError(fullName, fullNameError, 'পূর্ণ নাম প্রয়োজন');
+                isValid = false;
+            } else if (fullName.value.trim().length < 3) {
+                setFieldError(fullName, fullNameError, 'নাম কমপক্ষে ৩ অক্ষর হতে হবে');
+                isValid = false;
+            } else {
+                fullName.classList.add('is-valid');
+            }
+
+            // Username
+            if (!username.value.trim()) {
+                setFieldError(username, usernameError, 'ইউজারনেম প্রয়োজন');
+                isValid = false;
+            } else if (username.value.trim().length < 3) {
+                setFieldError(username, usernameError, 'ইউজারনেম কমপক্ষে ৩ অক্ষর হতে হবে');
+                isValid = false;
+            } else {
+                username.classList.add('is-valid');
+            }
+
+            // Email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email.value.trim()) {
+                setFieldError(email, emailError, 'ইমেইল প্রয়োজন');
+                isValid = false;
+            } else if (!emailRegex.test(email.value.trim())) {
+                setFieldError(email, emailError, 'সঠিক ইমেইল ঠিকানা দিন');
+                isValid = false;
+            } else {
+                email.classList.add('is-valid');
+            }
+
+            // Password
+            if (!password.value.trim()) {
+                setFieldError(password, passwordError, 'পাসওয়ার্ড প্রয়োজন');
+                isValid = false;
+            } else if (password.value.trim().length < 8) {
+                setFieldError(password, passwordError, 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষর হতে হবে');
+                isValid = false;
+            } else {
+                password.classList.add('is-valid');
+            }
+
+            // Confirm Password
+            if (!password2.value.trim()) {
+                setFieldError(password2, password2Error, 'পাসওয়ার্ড নিশ্চিত করুন');
+                isValid = false;
+            } else if (password.value.trim() !== password2.value.trim()) {
+                setFieldError(password2, password2Error, 'পাসওয়ার্ড মিলছে না');
+                isValid = false;
+            } else {
+                password2.classList.add('is-valid');
+            }
+
+            // Phone — OPTIONAL, but if the user typed something, it must
+            // match the same pattern the backend enforces. This was
+            // previously missing entirely, so an invalid number only got
+            // caught after a round trip to the server.
+            const phoneValue = phone.value.trim();
+            if (phoneValue && !PHONE_REGEX.test(phoneValue)) {
+                setFieldError(phone, phoneError, 'সঠিক মোবাইল নম্বর দিন। (যেমন: 01712345678 অথবা +8801712345678)');
+                isValid = false;
+            } else if (phoneValue) {
+                phone.classList.add('is-valid');
+            }
+
+            // Terms
+            if (!terms.checked) {
+                showAlert('সেবার শর্তাবলী মেনে চলতে সম্মতি দিন', 'error');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // ============================================
+        // Get CSRF Token
+        // ============================================
+        function getCookie(name) {
+            let value = null;
+            if (document.cookie && document.cookie !== '') {
+                document.cookie.split(';').forEach(c => {
+                    const trimmed = c.trim();
+                    if (trimmed.startsWith(name + '=')) {
+                        value = decodeURIComponent(trimmed.substring(name.length + 1));
+                    }
+                });
+            }
+            return value;
+        }
+
+        // ============================================
+        // Split "পূর্ণ নাম" into first_name / last_name —
+        // the backend serializer has no `full_name` input field
+        // (it's a read-only computed property), so sending
+        // `full_name` directly was silently dropped and the
+        // user's name never got saved.
+        // ============================================
+        function splitFullName(value) {
+            const parts = value.trim().split(/\s+/);
+            const first_name = parts.shift() || '';
+            const last_name = parts.join(' ');
+            return { first_name, last_name };
+        }
+
+        // ============================================
+        // Handle Registration
+        // ============================================
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+
+            const { first_name, last_name } = splitFullName(fullName.value);
+
+            try {
+                const response = await fetch('/api/auth/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        first_name,
+                        last_name,
+                        username: username.value.trim(),
+                        email: email.value.trim(),
+                        password: password.value.trim(),
+                        password2: password2.value.trim(),
+                        phone: phone.value.trim(),
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.status === 201 && data.success) {
+                    localStorage.setItem('access_token', data.data.access);
+                    localStorage.setItem('refresh_token', data.data.refresh);
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.data.user_id,
+                        username: data.data.username,
+                        email: data.data.email,
+                        full_name: `${first_name} ${last_name}`.trim() || data.data.username,
+                        is_email_verified: data.data.is_email_verified,
+                    }));
+
+                    showAlert(data.message || 'অ্যাকাউন্ট তৈরি সফল! ইমেইল ভেরিফাই করুন।', 'success');
+                    // ✅ Redirect to Verify Email page
+    setTimeout(() => { 
+        window.location.href = `/redirect_verify/?email=${encodeURIComponent(data.data.email)}`;
+    }, 1500);
+
+                } else {
+                    if (data.errors) {
+                        const fieldMapping = {
+                            'first_name': { field: fullName, errorEl: fullNameError },
+                            'username': { field: username, errorEl: usernameError },
+                            'email': { field: email, errorEl: emailError },
+                            'password': { field: password, errorEl: passwordError },
+                            'password2': { field: password2, errorEl: password2Error },
+                            'phone': { field: phone, errorEl: phoneError },
+                        };
+
+                        let hasError = false;
+                        for (const [key, mapping] of Object.entries(fieldMapping)) {
+                            if (data.errors[key]) {
+                                const messages = Array.isArray(data.errors[key]) ? data.errors[key].join(', ') : data.errors[key];
+                                setFieldError(mapping.field, mapping.errorEl, messages);
+                                hasError = true;
+                            }
+                        }
+
+                        if (!hasError && data.message) {
+                            showAlert(data.message, 'error');
+                        }
+                    } else {
+                        showAlert(data.message || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('নেটওয়ার্ক সমস্যা। আপনার সংযোগ চেক করুন।', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        }
+
+        // ============================================
+        // Check if already logged in
+        // ============================================
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                window.location.href = '/';
+            }
+        }
+
+        // ============================================
+        // Real-time validation on input
+        // ============================================
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                    const errorEl = this.closest('.form-group').querySelector('.error-text');
+                    if (errorEl) {
+                        errorEl.classList.remove('show');
+                        errorEl.textContent = '';
+                    }
+                }
+            });
+        });
+
+        // Re-check phone specifically on blur, since "has some text" isn't
+        // the same as "matches the required format".
+        phone.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value && !PHONE_REGEX.test(value)) {
+                setFieldError(phone, phoneError, 'সঠিক মোবাইল নম্বর দিন। (যেমন: 01712345678 অথবা +8801712345678)');
+            }
+        });
+
+        // ============================================
+        // Event Listeners
+        // ============================================
+        form.addEventListener('submit', handleRegister);
+
+        // ============================================
+        // Init
+        // ============================================
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+
+</body>
+</html>

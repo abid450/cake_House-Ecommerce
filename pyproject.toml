@@ -1,0 +1,34 @@
+[project]
+name = "cooking"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "celery==5.3.6",
+    "celery-starter==1.0.9",
+    "django==5.0.6",
+    "django-celery-beat==2.6.0",
+    "django-celery-results==2.5.1",
+    "django-cors-headers==4.3.1",
+    "django-extensions==3.2.3",
+    "django-filter==24.2",
+    "django-redis==5.4.0",
+    "django-rest-passwordreset>=1.6.0",
+    "djangorestframework==3.15.1",
+    "djangorestframework-simplejwt==5.3.0",
+    "eventlet==0.41.0",
+    "flower==2.0.0",
+    "pillow==10.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.14.0",
+    "pytest-xdist>=3.8.0",
+    "python-decouple==3.8",
+    "python-dotenv==1.0.1",
+    "redis==5.0.1",
+    "requests==2.32.3",
+    "setuptools<82",
+    "sslcommerz-lib>=1.0",
+    "user-agents>=2.2.0",
+]

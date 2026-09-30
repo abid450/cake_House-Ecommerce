@@ -1,0 +1,624 @@
+<!-- frontend/verify-email.html -->
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইমেইল ভেরিফিকেশন — সুবাস বেকারি</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #2A1620;
+            --bg-cream: #FAF1E2;
+            --surface: #FFFDF9;
+            --berry: #8E2E3B;
+            --berry-deep: #6E1F2A;
+            --gold: #C79A4B;
+            --gold-soft: #EAD3A0;
+            --pistachio: #7C9473;
+            --text-dark: #2A1620;
+            --text-light: #F8EEDF;
+            --line: rgba(42, 22, 32, 0.12);
+            --shadow-warm: 0 20px 36px -18px rgba(142, 46, 59, 0.28);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .verify-container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: 22px;
+            padding: 40px 35px;
+            box-shadow: var(--shadow-warm);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verify-container::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199, 154, 75, 0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        .verify-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--berry));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 24px -8px rgba(199, 154, 75, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 24px -8px rgba(199, 154, 75, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 32px -8px rgba(199, 154, 75, 0.7); }
+        }
+
+        h1 {
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--bg-dark);
+            margin-bottom: 10px;
+        }
+
+        h1 span { color: var(--berry); }
+
+        .subtitle {
+            color: rgba(42, 22, 32, 0.65);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .email-highlight {
+            display: inline-block;
+            background: var(--bg-cream);
+            border: 1px dashed var(--line);
+            border-radius: 8px;
+            padding: 4px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--berry);
+            font-weight: 600;
+            margin: 8px 0 20px;
+            word-break: break-all;
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-cream);
+            border-radius: 12px;
+            border: 1px solid var(--line);
+        }
+
+        .step-number {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--berry);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .step-text {
+            font-size: 13.5px;
+            color: rgba(42, 22, 32, 0.8);
+            line-height: 1.5;
+        }
+
+        .step-text strong {
+            color: var(--berry-deep);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(142, 46, 59, 0.15);
+            border-top-color: var(--berry);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 16px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin: 6px 4px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--berry), var(--berry-deep));
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(142, 46, 59, 0.35);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--berry);
+            border: 2px solid var(--berry);
+        }
+
+        .btn-outline:hover {
+            background: var(--berry);
+            color: var(--text-light);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+            color: var(--bg-dark);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(199, 154, 75, 0.35);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Status Box */
+        .status-box {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-weight: 500;
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status-box.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+
+        .status-box.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+
+        .status-box.info {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            display: block;
+        }
+
+        /* Resend Section */
+        .resend-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .resend-section p {
+            font-size: 13px;
+            color: rgba(42, 22, 32, 0.55);
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .verify-footer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            font-size: 13px;
+            color: rgba(42, 22, 32, 0.55);
+        }
+
+        .verify-footer a {
+            color: var(--berry);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .verify-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success State */
+        .success-icon {
+            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        }
+
+        .error-icon {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        }
+
+        /* Timer */
+        .timer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: rgba(42, 22, 32, 0.5);
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .verify-container { padding: 28px 20px; }
+            h1 { font-size: 22px; }
+            .verify-icon { width: 72px; height: 72px; font-size: 32px; }
+            .btn { padding: 10px 20px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="verify-container">
+
+        <!-- Icon -->
+        <div class="verify-icon" id="icon">📧</div>
+
+        <!-- Title -->
+        <h1 id="title">ইমেইল <span>ভেরিফিকেশন</span></h1>
+
+        <!-- Message -->
+        <p class="subtitle" id="subtitle">
+            আপনার ইমেইলে একটি ভেরিফিকেশন লিংক পাঠানো হয়েছে।
+        </p>
+
+        <!-- Email Highlight -->
+        <div class="email-highlight" id="emailHighlight">
+            <i class="fas fa-envelope"></i>
+            <span id="emailText">your-email@example.com</span>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps" id="steps">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-text">আপনার <strong>ইনবক্স</strong> খুলুন (স্প্যাম ফোল্ডারও দেখুন)</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-text"><strong>"Verify Email Address"</strong> বাটনে ক্লিক করুন</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-text">ভেরিফিকেশন সম্পন্ন হলে আপনি <strong>লগইন</strong> করতে পারবেন</div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="spinner" id="spinner" style="display:none;"></div>
+
+        <!-- Status Box -->
+        <div class="status-box" id="statusBox"></div>
+
+        <!-- Actions -->
+        <div id="actions" style="margin-top:20px;">
+            <a href="/login/" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> লগইন করুন
+            </a>
+            <a href="/home/" class="btn btn-outline">
+                <i class="fas fa-home"></i> হোম
+            </a>
+        </div>
+
+        <!-- Resend Section -->
+        <div class="resend-section" id="resendSection">
+            <p>ইমেইল পাননি?</p>
+            <button class="btn btn-gold" id="resendBtn" onclick="resendVerification()">
+                <i class="fas fa-redo"></i> আবার পাঠান
+            </button>
+            <div class="timer" id="timer"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="verify-footer">
+            <p>ভুল ইমেইল দিয়েছেন? <a href="/register/">নতুন রেজিস্টার করুন</a></p>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // Config
+        // ============================================
+        const API_BASE = '';
+
+        // ============================================
+        // Get Data from URL / localStorage
+        // ============================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlEmail = urlParams.get('email');
+        const urlToken = urlParams.get('token');
+
+        // Check localStorage for last registered email
+        const storedEmail = localStorage.getItem('pending_email');
+        const email = urlEmail || storedEmail || 'your-email@example.com';
+
+        // ============================================
+        // Elements
+        // ============================================
+        const els = {
+            icon: document.getElementById('icon'),
+            title: document.getElementById('title'),
+            subtitle: document.getElementById('subtitle'),
+            emailText: document.getElementById('emailText'),
+            emailHighlight: document.getElementById('emailHighlight'),
+            steps: document.getElementById('steps'),
+            spinner: document.getElementById('spinner'),
+            statusBox: document.getElementById('statusBox'),
+            actions: document.getElementById('actions'),
+            resendSection: document.getElementById('resendSection'),
+            resendBtn: document.getElementById('resendBtn'),
+            timer: document.getElementById('timer'),
+        };
+
+        // ============================================
+        // Show Email
+        // ============================================
+        if (email && email !== 'your-email@example.com') {
+            els.emailText.textContent = email;
+        } else {
+            els.emailText.textContent = 'আপনার ইমেইল';
+        }
+
+        // ============================================
+        // Auto Verify if Token Present (from email link)
+        // ============================================
+        if (urlToken) {
+            autoVerify(urlToken);
+        }
+
+        // ============================================
+        // Auto Verify Function
+        // ============================================
+        async function autoVerify(token) {
+            els.spinner.style.display = 'block';
+            els.steps.style.display = 'none';
+            els.subtitle.textContent = 'আপনার ইমেইল ভেরিফাই করা হচ্ছে...';
+
+            try {
+                const response = await fetch('/api/auth/verify-email/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(data);
+                } else {
+                    showError(data.message || 'ভেরিফিকেশন ব্যর্থ হয়েছে');
+                }
+            } catch (error) {
+                console.error('Verify error:', error);
+                showError('সার্ভারে সংযোগ করা যাচ্ছে না');
+            }
+        }
+
+        // ============================================
+        // Show Success
+        // ============================================
+        function showSuccess(data) {
+            els.spinner.style.display = 'none';
+            els.icon.textContent = '✅';
+            els.icon.classList.add('success-icon');
+            els.title.innerHTML = 'ইমেইল <span style="color:#16a34a;">ভেরিফাইড!</span>';
+            els.subtitle.textContent = data.message || 'আপনার ইমেইল সফলভাবে ভেরিফাই করা হয়েছে।';
+            els.steps.style.display = 'none';
+            els.resendSection.style.display = 'none';
+            els.emailHighlight.style.display = 'none';
+
+            els.statusBox.className = 'status-box success';
+            els.statusBox.innerHTML = `
+                <i class="fas fa-check-circle"></i> 
+                স্বাগতম! আপনার অ্যাকাউন্ট সক্রিয় হয়েছে।
+            `;
+
+            els.actions.innerHTML = `
+                <a href="/login/" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> লগইন করুন
+                </a>
+                <a href="/home/" class="btn btn-gold">
+                    <i class="fas fa-shopping-bag"></i> শপিং শুরু করুন
+                </a>
+            `;
+
+            // Clear pending email
+            localStorage.removeItem('pending_email');
+
+            // Auto redirect to login after 5 seconds
+            let countdown = 5;
+            els.timer.style.display = 'block';
+            els.timer.textContent = `${countdown} সেকেন্ডে লগইন পেজে যাবে...`;
+            
+            const interval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    window.location.href = '/login/';
+                } else {
+                    els.timer.textContent = `${countdown} সেকেন্ডে লগইন পেজে যাবে...`;
+                }
+            }, 1000);
+        }
+
+        // ============================================
+        // Show Error
+        // ============================================
+        function showError(message) {
+            els.spinner.style.display = 'none';
+            els.icon.textContent = '❌';
+            els.icon.classList.add('error-icon');
+            els.title.innerHTML = 'ভেরিফিকেশন <span style="color:#dc2626;">ব্যর্থ</span>';
+            els.subtitle.textContent = message || 'ভেরিফিকেশন লিংকটি সঠিক নয় বা মেয়াদ শেষ হয়ে গেছে।';
+            els.steps.style.display = 'none';
+
+            els.statusBox.className = 'status-box error';
+            els.statusBox.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i> 
+                ${message || 'ভেরিফিকেশন ব্যর্থ হয়েছে'}
+            `;
+
+            els.resendSection.style.display = 'block';
+        }
+
+        // ============================================
+        // Resend Verification
+        // ============================================
+        async function resendVerification() {
+            const email = prompt('আপনার ইমেইল দিন:', els.emailText.textContent);
+            if (!email) return;
+
+            els.resendBtn.disabled = true;
+            els.resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
+
+            try {
+                const response = await fetch('/api/auth/resend-verification/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    els.statusBox.className = 'status-box success';
+                    els.statusBox.innerHTML = `
+                        <i class="fas fa-check-circle"></i> 
+                        ${data.message || 'ভেরিফিকেশন ইমেইল পাঠানো হয়েছে!'}
+                    `;
+                    
+                    // Reset button
+                    els.resendBtn.disabled = false;
+                    els.resendBtn.innerHTML = '<i class="fas fa-redo"></i> আবার পাঠান';
+                    
+                    // Update email display
+                    els.emailText.textContent = email;
+                    localStorage.setItem('pending_email', email);
+                    
+                    // 60 second cooldown
+                    startCooldown();
+                } else {
+                    els.statusBox.className = 'status-box error';
+                    els.statusBox.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i> 
+                        ${data.message || 'ইমেইল পাঠানো যায়নি'}
+                    `;
+                    els.resendBtn.disabled = false;
+                    els.resendBtn.innerHTML = '<i class="fas fa-redo"></i> আবার পাঠান';
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                els.statusBox.className = 'status-box error';
+                els.statusBox.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i> 
+                    সার্ভার সমস্যা। আবার চেষ্টা করুন।
+                `;
+                els.resendBtn.disabled = false;
+                els.resendBtn.innerHTML = '<i class="fas fa-redo"></i> আবার পাঠান';
+            }
+        }
+
+        // ============================================
+        // Cooldown Timer
+        // ============================================
+        function startCooldown() {
+            let seconds = 60;
+            els.resendBtn.disabled = true;
+            els.timer.style.display = 'block';
+
+            const interval = setInterval(() => {
+                seconds--;
+                els.timer.textContent = `${seconds} সেকেন্ড পরে আবার পাঠাতে পারবেন`;
+                
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    els.resendBtn.disabled = false;
+                    els.resendBtn.innerHTML = '<i class="fas fa-redo"></i> আবার পাঠান';
+                    els.timer.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        // ============================================
+        // Init
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📧 Verify Email Page Loaded');
+            console.log('📧 Email:', email);
+            console.log('📧 Token:', urlToken);
+        });
+    </script>
+
+</body>
+</html>

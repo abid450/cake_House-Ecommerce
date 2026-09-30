@@ -1,0 +1,167 @@
+<!-- frontend/checkout_success.html -->
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পেমেন্ট সফল — সুবাস বেকারি</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@600;700&family=Hind+Siliguri:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #faf0e6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .success-card {
+            background: #fffcf9;
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 560px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 24px 60px -20px rgba(26,15,20,0.3);
+        }
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7fa07a, #5f7a5a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 48px;
+            color: #fff;
+            animation: pop 0.5s ease;
+        }
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        h1 {
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 28px;
+            color: #1a0f14;
+            margin-bottom: 12px;
+        }
+        p {
+            color: rgba(26,15,20,0.65);
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+        .order-details {
+            background: #faf0e6;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 24px 0;
+            text-align: left;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(26,15,20,0.08);
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row span:first-child { color: rgba(26,15,20,0.6); }
+        .detail-row span:last-child {
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: #1a0f14;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #a0324a, #7a2436);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(160,50,74,0.35);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #1a0f14;
+            border: 1.5px solid rgba(26,15,20,0.15);
+        }
+        .btn-outline:hover {
+            background: #faf0e6;
+        }
+        @media (max-width: 480px) {
+            .success-card { padding: 32px 24px; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h1>পেমেন্ট সফল হয়েছে! 🎉</h1>
+        <p>আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে। শীঘ্রই আমরা আপনার সাথে যোগাযোগ করব।</p>
+
+        <div class="order-details">
+            <div class="detail-row">
+                <span>অর্ডার নম্বর</span>
+                <span id="orderNumber">—</span>
+            </div>
+            <div class="detail-row">
+                <span>পেমেন্ট স্ট্যাটাস</span>
+                <span style="color:#7fa07a;">✓ পরিশোধিত</span>
+            </div>
+            <div class="detail-row">
+                <span>স্ট্যাটাস</span>
+                <span>নিশ্চিত করা হয়েছে</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="/orders/" class="btn btn-outline">
+                <i class="fas fa-box"></i> আমার অর্ডার
+            </a>
+            <a href="/home/" class="btn btn-primary">
+                <i class="fas fa-home"></i> হোমে ফিরুন
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // ✅ URL থেকে order number নিন
+        const params = new URLSearchParams(window.location.search);
+        const orderNumber = params.get('order');
+        if (orderNumber) {
+            document.getElementById('orderNumber').textContent = orderNumber;
+        }
+    </script>
+
+</body>
+</html>

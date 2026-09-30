@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইমেইল ভেরিফিকেশন — সুবাস বেকারি</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #2A1620;
+            --bg-cream: #FAF1E2;
+            --surface: #FFFDF9;
+            --berry: #8E2E3B;
+            --berry-deep: #6E1F2A;
+            --gold: #C79A4B;
+            --gold-soft: #EAD3A0;
+            --pistachio: #7C9473;
+            --text-dark: #2A1620;
+            --text-light: #F8EEDF;
+            --line: rgba(42, 22, 32, 0.12);
+            --shadow-warm: 0 20px 36px -18px rgba(142, 46, 59, 0.28);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .verify-container {
+            max-width: 480px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: 22px;
+            padding: 40px 35px;
+            box-shadow: var(--shadow-warm);
+            text-align: center;
+        }
+
+        .verify-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--berry));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 24px;
+            color: var(--bg-dark);
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: rgba(42, 22, 32, 0.65);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(142, 46, 59, 0.15);
+            border-top-color: var(--berry);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--berry), var(--berry-deep));
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(142, 46, 59, 0.35);
+        }
+
+        .status-box {
+            padding: 16px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-box.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+
+        .status-box.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+
+        .token-info {
+            background: var(--bg-cream);
+            border: 1px dashed var(--line);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: rgba(42, 22, 32, 0.6);
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="verify-container">
+
+        <!-- Icon -->
+        <div class="verify-icon" id="icon">📧</div>
+
+        <!-- Title -->
+        <h1 id="title">ইমেইল ভেরিফিকেশন</h1>
+
+        <!-- Message -->
+        <p id="message">আপনার ইমেইল ভেরিফাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+
+        <!-- Token Info (Debug) -->
+        <div class="token-info" id="tokenInfo" style="display:none;">
+            Token: <span id="tokenValue"></span>
+        </div>
+
+        <!-- Spinner -->
+        <div class="spinner" id="spinner"></div>
+
+        <!-- Status Box -->
+        <div class="status-box" id="statusBox"></div>
+
+        <!-- Actions -->
+        <div id="actions" style="display:none;">
+            <a href="/login/" class="btn btn-primary" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> লগইন করুন
+            </a>
+            <a href="/products/" class="btn btn-primary" id="shopBtn" style="background: var(--gold);">
+                <i class="fas fa-shopping-bag"></i> শপিং শুরু করুন
+            </a>
+        </div>
+
+        <div id="retryActions" style="display:none; margin-top:16px;">
+            <button onclick="resendVerification()" class="btn btn-primary">
+                <i class="fas fa-redo"></i> আবার ইমেইল পাঠান
+            </button>
+            <a href="/register/" class="btn btn-primary" style="background: var(--gold);">
+                <i class="fas fa-user-plus"></i> নতুন রেজিস্টার করুন
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // Config
+        // ============================================
+        const API_BASE = '';
+
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        // Elements
+        const icon = document.getElementById('icon');
+        const title = document.getElementById('title');
+        const message = document.getElementById('message');
+        const spinner = document.getElementById('spinner');
+        const statusBox = document.getElementById('statusBox');
+        const actions = document.getElementById('actions');
+        const retryActions = document.getElementById('retryActions');
+        const tokenInfo = document.getElementById('tokenInfo');
+        const tokenValue = document.getElementById('tokenValue');
+
+        // ============================================
+        // Verify Email
+        // ============================================
+        async function verifyEmail() {
+            // Check token
+            if (!token) {
+                showError('❌', 'ভেরিফিকেশন টোকেন নেই', 
+                    'আপনার ইমেইলে পাঠানো লিংক থেকে আবার চেষ্টা করুন।');
+                return;
+            }
+
+            // Show token (debug)
+            tokenInfo.style.display = 'block';
+            tokenValue.textContent = token;
+
+            try {
+                console.log('🔍 Verifying token:', token);
+
+                const response = await fetch('/api/auth/verify-email/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await response.json();
+                console.log('📦 Response:', data);
+
+                if (response.ok && data.success) {
+                    // ✅ Success
+                    showSuccess(data);
+                } else {
+                    // ❌ Error
+                    const errorMessage = data.message || 
+                                       (data.errors && data.errors.token ? data.errors.token[0] : 'ভেরিফিকেশন ব্যর্থ হয়েছে');
+                    showError('❌', 'ভেরিফিকেশন ব্যর্থ', errorMessage);
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showError('⚠️', 'সার্ভার সমস্যা', 
+                    'সার্ভারে সংযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+            }
+        }
+
+        // ============================================
+        // Show Success
+        // ============================================
+        function showSuccess(data) {
+            icon.textContent = '✅';
+            icon.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+            title.textContent = 'ইমেইল ভেরিফাইড!';
+            title.style.color = '#16a34a';
+            message.textContent = data.message || 'আপনার ইমেইল সফলভাবে ভেরিফাই করা হয়েছে। এখন লগইন করতে পারেন।';
+            spinner.style.display = 'none';
+            
+            statusBox.className = 'status-box success';
+            statusBox.innerHTML = `
+                <i class="fas fa-check-circle"></i> 
+                স্বাগতম! আপনার অ্যাকাউন্ট সক্রিয় হয়েছে।
+            `;
+
+            actions.style.display = 'block';
+            tokenInfo.style.display = 'none';
+
+            // Auto redirect after 5 seconds
+            setTimeout(() => {
+                window.location.href = '/login/';
+            }, 5000);
+        }
+
+        // ============================================
+        // Show Error
+        // ============================================
+        function showError(iconText, titleText, messageText) {
+            icon.textContent = iconText;
+            icon.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            title.textContent = titleText;
+            title.style.color = '#dc2626';
+            message.textContent = messageText;
+            spinner.style.display = 'none';
+
+            statusBox.className = 'status-box error';
+            statusBox.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i> 
+                ${messageText}
+            `;
+
+            retryActions.style.display = 'block';
+        }
+
+        // ============================================
+        // Resend Verification
+        // ============================================
+        async function resendVerification() {
+            const email = prompt('আপনার ইমেইল দিন:');
+            if (!email) return;
+
+            try {
+                const response = await fetch('/api/auth/resend-verification/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ ' + (data.message || 'ভেরিফিকেশন ইমেইল পাঠানো হয়েছে!'));
+                } else {
+                    alert('❌ ' + (data.message || 'ভেরিফিকেশন ইমেইল পাঠানো যায়নি।'));
+                }
+            } catch (error) {
+                alert('❌ সার্ভার সমস্যা। আবার চেষ্টা করুন।');
+            }
+        }
+
+        // ============================================
+        // Init
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            verifyEmail();
+        });
+    </script>
+
+</body>
+</html>

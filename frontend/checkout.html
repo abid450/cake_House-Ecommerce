@@ -1,0 +1,865 @@
+<!-- frontend/checkout.html -->
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>চেকআউট — সুবাস বেকারি</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-cream: #faf0e6;
+            --surface: #fffcf9;
+            --berry: #a0324a;
+            --berry-deep: #7a2436;
+            --gold: #d4a857;
+            --gold-deep: #b8913a;
+            --pistachio: #7fa07a;
+            --text-dark: #1a0f14;
+            --line: rgba(26, 15, 20, 0.1);
+            --shadow: 0 18px 40px -20px rgba(26, 15, 20, 0.35);
+            --radius: 20px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        h1, h2, h3 { font-family: 'Noto Serif Bengali', serif; font-weight: 600; }
+        .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+        /* Header */
+        .checkout-header {
+            background: var(--text-dark);
+            color: #faf0e6;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(250,240,230,0.1);
+        }
+        .checkout-header .wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-mark {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: conic-gradient(from 210deg, var(--gold), #d4667e, var(--pistachio), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .brand-name { font-size: 20px; font-weight: 700; }
+        .brand-name span { color: var(--gold); }
+        .steps { display: flex; gap: 20px; font-size: 13px; }
+        .step { display: flex; align-items: center; gap: 6px; opacity: 0.5; }
+        .step.active { opacity: 1; color: var(--gold); }
+        .step-dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(250,240,230,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700;
+        }
+        .step.active .step-dot { background: var(--gold); color: var(--text-dark); }
+
+        /* Checkout Grid */
+        .checkout-main { padding: 40px 0 80px; }
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 32px;
+        }
+
+        /* Forms */
+        .form-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        .form-card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-card h2 i { color: var(--berry); }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+        .form-group label .req { color: #dc2626; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--berry);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(160, 50, 74, 0.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        .form-group input.is-invalid,
+        .form-group textarea.is-invalid {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .field-error {
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 6px;
+            display: none;
+        }
+        .field-error.show { display: block; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            gap: 12px;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .payment-option:hover {
+            border-color: var(--berry);
+            background: var(--bg-cream);
+        }
+        .payment-option.selected {
+            border-color: var(--berry);
+            background: rgba(160, 50, 74, 0.05);
+        }
+        .payment-option input[type="radio"] {
+            width: 18px; height: 18px;
+            accent-color: var(--berry);
+        }
+        .payment-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: var(--bg-cream);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .payment-info { flex: 1; }
+        .payment-info h4 { font-size: 15px; margin-bottom: 2px; }
+        .payment-info p { font-size: 12px; color: rgba(26,15,20,0.5); }
+
+        /* Order Summary */
+        .order-summary {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+        }
+        .order-summary h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+        }
+        .summary-items {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-thumb {
+            width: 56px; height: 56px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0e4d4, #e2d0b8);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .summary-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .summary-info { flex: 1; min-width: 0; }
+        .summary-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .summary-meta {
+            font-size: 12px;
+            color: rgba(26,15,20,0.5);
+        }
+        .summary-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--berry);
+            text-align: right;
+        }
+
+        .summary-totals {
+            padding-top: 16px;
+            border-top: 2px dashed var(--line);
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: rgba(26,15,20,0.65);
+        }
+        .total-row.grand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+        }
+        .total-row.grand span:last-child {
+            color: var(--berry);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-place-order {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--berry), var(--berry-deep));
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .btn-place-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(160, 50, 74, 0.35);
+        }
+        .btn-place-order:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-place-order .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        .btn-place-order.loading .spinner { display: block; }
+        .btn-place-order.loading .btn-text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: rgba(26,15,20,0.5);
+        }
+        .secure-badge i { color: var(--pistachio); }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            .checkout-grid { grid-template-columns: 1fr; }
+            .order-summary { position: static; }
+        }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .form-card { padding: 22px; }
+            .steps { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="wrap">
+            <div class="brand">
+                <div class="brand-mark">🍰</div>
+                <div class="brand-name">সুবাস <span>বেকারি</span></div>
+            </div>
+            <div class="steps">
+                <div class="step active">
+                    <span class="step-dot">1</span> চেকআউট
+                </div>
+                <div class="step">
+                    <span class="step-dot">2</span> পেমেন্ট
+                </div>
+                <div class="step">
+                    <span class="step-dot">3</span> নিশ্চিতকরণ
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="checkout-main">
+        <div class="wrap checkout-grid">
+
+            <!-- LEFT: Forms -->
+            <div>
+                <!-- Shipping Info -->
+                <div class="form-card">
+                    <h2><i class="fas fa-truck"></i> ডেলিভারি তথ্য</h2>
+                    <form id="checkoutForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>পূর্ণ নাম <span class="req">*</span></label>
+                                <input type="text" id="shippingName" name="shipping_name" placeholder="আপনার নাম">
+                                <div class="field-error" id="error_shipping_name"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>মোবাইল নম্বর <span class="req">*</span></label>
+                                <input type="tel" id="shippingPhone" name="shipping_phone" placeholder="017XXXXXXXX">
+                                <div class="field-error" id="error_shipping_phone"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ইমেইল</label>
+                            <input type="email" id="shippingEmail" name="shipping_email" placeholder="you@example.com">
+                            <div class="field-error" id="error_shipping_email"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>ঠিকানা <span class="req">*</span></label>
+                            <textarea id="shippingAddress" name="shipping_address" placeholder="বাসা/রোড/এলাকা"></textarea>
+                            <div class="field-error" id="error_shipping_address"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>শহর <span class="req">*</span></label>
+                                <input type="text" id="shippingCity" name="shipping_city" placeholder="ফেনী">
+                                <div class="field-error" id="error_shipping_city"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>পোস্ট কোড</label>
+                                <input type="text" id="shippingPostalCode" name="shipping_postal_code" placeholder="3900">
+                                <div class="field-error" id="error_shipping_postal_code"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>অর্ডার নোট (ঐচ্ছিক)</label>
+                            <textarea id="customerNote" name="customer_note" placeholder="কেকের উপর লেখা, ডেলিভারি সময়, ইত্যাদি"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="form-card">
+                    <h2><i class="fas fa-credit-card"></i> পেমেন্ট পদ্ধতি</h2>
+                    <div class="payment-methods">
+                        <label class="payment-option selected">
+                            <input type="radio" name="payment_method" value="sslcommerz" checked>
+                            <div class="payment-icon">💳</div>
+                            <div class="payment-info">
+                                <h4>SSLCommerz</h4>
+                                <p>bKash, Nagad, Card, Bank</p>
+                            </div>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment_method" value="cod">
+                            <div class="payment-icon">💵</div>
+                            <div class="payment-info">
+                                <h4>ক্যাশ অন ডেলিভারি</h4>
+                                <p>পণ্য হাতে পেয়ে টাকা দিন</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Order Summary -->
+            <div>
+                <div class="order-summary">
+                    <h2>🛒 অর্ডার সামারি</h2>
+                    <div class="summary-items" id="summaryItems">
+                        <div style="text-align:center;padding:40px;color:#999;">লোড হচ্ছে...</div>
+                    </div>
+                    <div class="summary-totals">
+                        <div class="total-row">
+                            <span>সাবটোটাল</span>
+                            <span id="subtotal">৳0</span>
+                        </div>
+                        <div class="total-row">
+                            <span>ডেলিভারি চার্জ</span>
+                            <span id="deliveryCharge">৳100</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>সর্বমোট</span>
+                            <span id="grandTotal">৳0</span>
+                        </div>
+                    </div>
+                    <button class="btn-place-order" id="placeOrderBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text">
+                            <i class="fas fa-lock"></i> অর্ডার নিশ্চিত করুন
+                        </span>
+                    </button>
+                    <div class="secure-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>SSL এনক্রিপ্টেড সিকিউর পেমেন্ট</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            "use strict";
+
+            const TOKEN_KEY = 'access_token';
+            const API_BASE = '';
+
+            const els = {
+                summaryItems: document.getElementById('summaryItems'),
+                subtotal: document.getElementById('subtotal'),
+                deliveryCharge: document.getElementById('deliveryCharge'),
+                grandTotal: document.getElementById('grandTotal'),
+                placeOrderBtn: document.getElementById('placeOrderBtn'),
+                shippingName: document.getElementById('shippingName'),
+                shippingPhone: document.getElementById('shippingPhone'),
+                shippingEmail: document.getElementById('shippingEmail'),
+                shippingAddress: document.getElementById('shippingAddress'),
+                shippingCity: document.getElementById('shippingCity'),
+                shippingPostalCode: document.getElementById('shippingPostalCode'),
+                customerNote: document.getElementById('customerNote'),
+            };
+
+            let cart = null;
+            const DELIVERY_CHARGE = 100;
+
+            const taka = (v) => '৳' + Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+            function escapeHtml(s) {
+                return String(s ?? '').replace(/[&<>"']/g, c => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[c]));
+            }
+
+            function getCookie(name) {
+                const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                return match ? decodeURIComponent(match[2]) : null;
+            }
+
+            function getAuthHeaders() {
+                const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+                const token = localStorage.getItem(TOKEN_KEY);
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const csrf = getCookie('csrftoken');
+                if (csrf) headers['X-CSRFToken'] = csrf;
+                return headers;
+            }
+
+            async function apiGet(path) {
+                const res = await fetch(API_BASE + path, { headers: getAuthHeaders() });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            }
+
+            async function apiPost(path, body) {
+                const res = await fetch(API_BASE + path, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    credentials: 'same-origin',
+                    body: JSON.stringify(body || {}),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    const error = new Error(JSON.stringify(err));
+                    error.response = err;
+                    error.status = res.status;
+                    throw error;
+                }
+                return res.json();
+            }
+
+            function isAuthenticated() {
+                return !!localStorage.getItem(TOKEN_KEY);
+            }
+
+            function getUser() {
+                try {
+                    const data = localStorage.getItem('user');
+                    return data ? JSON.parse(data) : null;
+                } catch { return null; }
+            }
+
+            // ============================================
+            // Field Error Helpers
+            // ============================================
+            function clearFieldError(fieldName) {
+                const input = document.querySelector(`[name="${fieldName}"]`);
+                const errorEl = document.getElementById(`error_${fieldName}`);
+                if (input) input.classList.remove('is-invalid');
+                if (errorEl) {
+                    errorEl.textContent = '';
+                    errorEl.classList.remove('show');
+                }
+            }
+
+            function showFieldError(fieldName, message) {
+                const input = document.querySelector(`[name="${fieldName}"]`);
+                const errorEl = document.getElementById(`error_${fieldName}`);
+                if (input) input.classList.add('is-invalid');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('show');
+                }
+            }
+
+            function clearAllErrors() {
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.field-error').forEach(el => {
+                    el.textContent = '';
+                    el.classList.remove('show');
+                });
+            }
+
+            // ============================================
+            // Load Cart
+            // ============================================
+            async function loadCart() {
+                if (!isAuthenticated()) {
+                    window.location.href = '/login/?next=/checkout/';
+                    return;
+                }
+
+                try {
+                    const data = await apiGet('/api/cart/');
+                    cart = data.data || { items: [], total_items: 0 };
+                    renderSummary();
+                    prefillUserInfo();
+                } catch (e) {
+                    console.error('Cart load error:', e);
+                    els.summaryItems.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;">কার্ট লোড করা যায়নি</div>';
+                }
+            }
+
+            function prefillUserInfo() {
+                const user = getUser();
+                if (user) {
+                    if (user.full_name && !els.shippingName.value) els.shippingName.value = user.full_name;
+                    if (user.email && !els.shippingEmail.value) els.shippingEmail.value = user.email;
+                    if (user.phone && !els.shippingPhone.value) els.shippingPhone.value = user.phone;
+                }
+            }
+
+            // ============================================
+            // Render Summary
+            // ============================================
+            function renderSummary() {
+                if (!cart || !cart.items || !cart.items.length) {
+                    els.summaryItems.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">কার্ট খালি</div>';
+                    els.subtotal.textContent = taka(0);
+                    els.deliveryCharge.textContent = taka(0);
+                    els.grandTotal.textContent = taka(0);
+                    els.placeOrderBtn.disabled = true;
+                    return;
+                }
+
+                let html = '';
+                let subtotal = 0;
+
+                cart.items.forEach(item => {
+                    const p = item.product_detail || {};
+                    const thumb = p.main_image
+                        ? `<img src="${p.main_image}" alt="${escapeHtml(p.name || '')}">`
+                        : '<span>🍰</span>';
+                    const price = item.unit_price || p.final_price || p.price || 0;
+                    const qty = item.quantity || 1;
+                    const lineTotal = price * qty;
+                    subtotal += lineTotal;
+
+                    html += `
+                        <div class="summary-item">
+                            <div class="summary-thumb">${thumb}</div>
+                            <div class="summary-info">
+                                <div class="summary-name">${escapeHtml(p.name || 'পণ্য')}</div>
+                                <div class="summary-meta">পরিমাণ: ${qty} × ${taka(price)}</div>
+                            </div>
+                            <div class="summary-price">${taka(lineTotal)}</div>
+                        </div>
+                    `;
+                });
+
+                els.summaryItems.innerHTML = html;
+                const delivery = DELIVERY_CHARGE;
+                const grand = subtotal + delivery;
+
+                els.subtotal.textContent = taka(subtotal);
+                els.deliveryCharge.textContent = taka(delivery);
+                els.grandTotal.textContent = taka(grand);
+            }
+
+            // ============================================
+            // Payment Method Selection
+            // ============================================
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    option.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+
+            // ============================================
+            // Clear Field Errors on Input
+            // ============================================
+            ['shipping_name', 'shipping_phone', 'shipping_email', 'shipping_address', 'shipping_city', 'shipping_postal_code'].forEach(fieldName => {
+                const input = document.querySelector(`[name="${fieldName}"]`);
+                if (input) {
+                    input.addEventListener('input', () => clearFieldError(fieldName));
+                }
+            });
+
+            // ============================================
+            // Place Order
+            // ============================================
+            async function placeOrder() {
+                console.log('🔍 Starting placeOrder...');
+                clearAllErrors();
+
+                // ✅ Step 1: Get values
+                const shippingName = els.shippingName.value.trim();
+                const shippingPhone = els.shippingPhone.value.trim();
+                const shippingEmail = els.shippingEmail.value.trim();
+                const shippingAddress = els.shippingAddress.value.trim();
+                const shippingCity = els.shippingCity.value.trim();
+                const shippingPostalCode = els.shippingPostalCode.value.trim();
+                const customerNote = els.customerNote.value.trim();
+
+                console.log('📋 Form Values:', { shippingName, shippingPhone, shippingAddress, shippingCity });
+
+                // ✅ Step 2: Frontend Validation
+                let hasError = false;
+
+                if (!shippingName) {
+                    showFieldError('shipping_name', 'নাম প্রয়োজন।');
+                    hasError = true;
+                } else if (shippingName.length < 3) {
+                    showFieldError('shipping_name', 'নাম কমপক্ষে ৩ অক্ষর হতে হবে।');
+                    hasError = true;
+                }
+
+                if (!shippingPhone) {
+                    showFieldError('shipping_phone', 'মোবাইল নম্বর প্রয়োজন।');
+                    hasError = true;
+                } else if (!/^(?:(?:\+?88)?01[3-9]\d{8})$/.test(shippingPhone.replace(/[\s\-\(\)]/g, ''))) {
+                    showFieldError('shipping_phone', 'সঠিক মোবাইল নম্বর দিন। (যেমন: 01712345678)');
+                    hasError = true;
+                }
+
+                if (!shippingAddress) {
+                    showFieldError('shipping_address', 'ঠিকানা প্রয়োজন।');
+                    hasError = true;
+                }
+
+                if (!shippingCity) {
+                    showFieldError('shipping_city', 'শহর প্রয়োজন।');
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    // First error field-এ Scroll করুন
+                    const firstError = document.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                    return;
+                }
+
+                // ✅ Step 3: Validate cart
+                if (!cart || !cart.items || cart.items.length === 0) {
+                    alert('❌ কার্টে কোনো পণ্য নেই');
+                    return;
+                }
+
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                console.log('💳 Payment Method:', paymentMethod);
+
+                // ✅ Step 4: Build items
+                const items = cart.items.map(item => ({
+                    product_id: item.product_detail?.id || item.product,
+                    quantity: item.quantity,
+                    customization: item.customization || {},
+                }));
+
+                // ✅ Step 5: Build order data
+                const orderData = {
+                    shipping_name: shippingName,
+                    shipping_phone: shippingPhone,
+                    shipping_email: shippingEmail || '',
+                    shipping_address: shippingAddress,
+                    shipping_city: shippingCity,
+                    shipping_state: shippingCity,
+                    shipping_postal_code: shippingPostalCode || '',
+                    shipping_country: 'Bangladesh',
+                    payment_method: paymentMethod,
+                    customer_note: customerNote || '',
+                    items: items,
+                };
+
+                console.log('📦 Final Order Data:', orderData);
+
+                els.placeOrderBtn.disabled = true;
+                els.placeOrderBtn.classList.add('loading');
+
+                try {
+                    console.log('🚀 Sending order request...');
+                    const orderResponse = await apiPost('/api/orders/', orderData);
+                    console.log('✅ Order Response:', orderResponse);
+
+                    if (!orderResponse.success) {
+                        throw new Error(orderResponse.message || 'অর্ডার তৈরি করা যায়নি');
+                    }
+
+                    const orderId = orderResponse.data.id;
+
+                    // If COD, redirect to success
+                    if (paymentMethod === 'cod') {
+                        window.location.href = `/checkout/success/?order=${orderResponse.data.order_number}`;
+                        return;
+                    }
+
+                    // If SSLCommerz, initiate payment
+                    console.log('💳 Initiating payment...');
+                    const paymentResponse = await apiPost('/api/payments/initiate/', {
+                        order_id: orderId
+                    });
+                    console.log('✅ Payment Response:', paymentResponse);
+
+                    if (paymentResponse.success && paymentResponse.data.gateway_url) {
+                        window.location.href = paymentResponse.data.gateway_url;
+                    } else {
+                        throw new Error(paymentResponse.message || 'পেমেন্ট শুরু করা যায়নি');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Order error:', error);
+                    
+                    // ✅ Backend Error Handling
+                    const errData = error.response || (() => {
+                        try { return JSON.parse(error.message); } catch { return {}; }
+                    })();
+
+                    console.log('❌ Error Data:', errData);
+
+                    let hasFieldError = false;
+
+                    // ✅ Field Errors দেখান
+                    if (errData.shipping_name) {
+                        showFieldError('shipping_name', Array.isArray(errData.shipping_name) ? errData.shipping_name[0] : errData.shipping_name);
+                        hasFieldError = true;
+                    }
+                    if (errData.shipping_phone) {
+                        showFieldError('shipping_phone', Array.isArray(errData.shipping_phone) ? errData.shipping_phone[0] : errData.shipping_phone);
+                        hasFieldError = true;
+                    }
+                    if (errData.shipping_email) {
+                        showFieldError('shipping_email', Array.isArray(errData.shipping_email) ? errData.shipping_email[0] : errData.shipping_email);
+                        hasFieldError = true;
+                    }
+                    if (errData.shipping_address) {
+                        showFieldError('shipping_address', Array.isArray(errData.shipping_address) ? errData.shipping_address[0] : errData.shipping_address);
+                        hasFieldError = true;
+                    }
+                    if (errData.shipping_city) {
+                        showFieldError('shipping_city', Array.isArray(errData.shipping_city) ? errData.shipping_city[0] : errData.shipping_city);
+                        hasFieldError = true;
+                    }
+
+                    // ✅ Non-field errors
+                    if (!hasFieldError) {
+                        let errorMsg = 'অর্ডার তৈরি করা যায়নি। আবার চেষ্টা করুন।';
+                        if (errData.message) errorMsg = errData.message;
+                        else if (errData.items) errorMsg = Array.isArray(errData.items) ? errData.items[0] : errData.items;
+                        else if (errData.non_field_errors) errorMsg = Array.isArray(errData.non_field_errors) ? errData.non_field_errors[0] : errData.non_field_errors;
+                        else if (errData.detail) errorMsg = errData.detail;
+                        alert('❌ ' + errorMsg);
+                    } else {
+                        // First error field-এ Scroll
+                        const firstError = document.querySelector('.is-invalid');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+
+                    els.placeOrderBtn.disabled = false;
+                    els.placeOrderBtn.classList.remove('loading');
+                }
+            }
+
+            els.placeOrderBtn.addEventListener('click', placeOrder);
+
+            // ============================================
+            // Init
+            // ============================================
+            loadCart();
+
+        })();
+    </script>
+
+</body>
+</html>

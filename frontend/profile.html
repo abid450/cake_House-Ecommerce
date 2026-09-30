@@ -1,0 +1,931 @@
+<!-- templates/profile.html -->
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার প্রোফাইল — সুবাস বেকারি</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #2A1620;
+            --bg-dark-2: #3B1E2A;
+            --bg-cream: #FAF1E2;
+            --surface: #FFFDF9;
+            --berry: #8E2E3B;
+            --berry-deep: #6E1F2A;
+            --berry-light: #C15C68;
+            --gold: #C79A4B;
+            --gold-deep: #A9812F;
+            --gold-soft: #EAD3A0;
+            --pistachio: #7C9473;
+            --text-dark: #2A1620;
+            --text-light: #F8EEDF;
+            --line: rgba(42, 22, 32, 0.12);
+            --line-light: rgba(248, 238, 223, 0.16);
+            --shadow: 0 18px 40px -20px rgba(42, 22, 32, 0.35);
+            --shadow-warm: 0 20px 36px -18px rgba(142, 46, 59, 0.28);
+            --radius-card: 22px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Noto Serif Bengali', serif; font-weight: 600; margin: 0; }
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+        /* ============================================
+           TOPBAR
+        ============================================ */
+        .topbar {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar .brand { display: flex; align-items: center; gap: 10px; font-family: 'Noto Serif Bengali', serif; font-weight: 700; font-size: 18px; }
+        .topbar .brand-mark {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: conic-gradient(from 210deg, var(--gold), var(--berry-light), var(--pistachio), var(--gold));
+            display: flex; align-items: center; justify-content: center; font-size: 15px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 14px; }
+        .topbar-actions a, .topbar-actions button {
+            display: flex; align-items: center; gap: 6px;
+            color: var(--text-light); font-size: 13.5px;
+            padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line-light);
+            transition: var(--transition);
+        }
+        .topbar-actions a:hover, .topbar-actions button:hover { background: rgba(248,238,223,0.08); border-color: var(--gold-soft); }
+
+        /* ============================================
+           LAYOUT
+        ============================================ */
+        .page-wrap { max-width: 920px; margin: 0 auto; padding: 36px 20px 70px; }
+
+        /* ============================================
+           HERO CARD
+        ============================================ */
+        .hero-card {
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-warm);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card::before {
+            content: "";
+            position: absolute; top: -70px; right: -70px; width: 200px; height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199,154,75,0.14), transparent 70%);
+            pointer-events: none;
+        }
+        .avatar-wrap { position: relative; flex-shrink: 0; cursor: pointer; }
+        .avatar {
+            width: 92px; height: 92px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Noto Serif Bengali', serif; font-size: 34px; font-weight: 700; color: var(--bg-dark);
+            box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px var(--line);
+            overflow: hidden;
+            position: relative;
+        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-hover-overlay {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(42,22,32,0.55);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-light); font-size: 20px;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .avatar-wrap:hover .avatar-hover-overlay { opacity: 1; }
+        #avatarInput { display: none; }
+
+        /* ============================================
+           AVATAR MODAL (Facebook-style)
+        ============================================ */
+        .avatar-modal-overlay {
+            position: fixed; inset: 0; background: rgba(42,22,32,0.65);
+            display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
+        }
+        .avatar-modal-overlay.open { display: flex; }
+        .avatar-modal {
+            background: var(--surface); border-radius: 22px; width: 100%; max-width: 380px;
+            overflow: hidden; box-shadow: var(--shadow-warm);
+        }
+        .avatar-modal-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid var(--line);
+        }
+        .avatar-modal-head h3 { font-size: 16px; }
+        .avatar-modal-close {
+            width: 30px; height: 30px; border-radius: 50%; background: var(--bg-cream);
+            display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--text-dark);
+        }
+        .avatar-modal-close:hover { background: var(--line); }
+        .avatar-modal-preview {
+            padding: 30px 20px 20px; display: flex; justify-content: center;
+        }
+        .avatar-modal-preview .big-avatar {
+            width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
+            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Noto Serif Bengali', serif; font-size: 56px; font-weight: 700; color: var(--bg-dark);
+            box-shadow: var(--shadow);
+        }
+        .avatar-modal-preview .big-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-modal-actions { padding: 6px 14px 22px; display: flex; flex-direction: column; gap: 4px; }
+        .avatar-modal-action-btn {
+            display: flex; align-items: center; gap: 12px; width: 100%;
+            padding: 13px 14px; border-radius: 12px; font-size: 14.5px; font-weight: 600;
+            color: var(--text-dark); transition: var(--transition); text-align: left;
+        }
+        .avatar-modal-action-btn:hover { background: var(--bg-cream); }
+        .avatar-modal-action-btn i { width: 20px; text-align: center; color: var(--berry); }
+        .avatar-modal-action-btn.danger { color: #dc2626; }
+        .avatar-modal-action-btn.danger i { color: #dc2626; }
+        .avatar-modal-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .hero-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+        .hero-info h1 { font-size: 22px; margin-bottom: 4px; }
+        .hero-info .email { font-size: 13.5px; color: rgba(42,22,32,0.55); margin-bottom: 10px; }
+        .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11.5px; font-weight: 600; padding: 4px 11px; border-radius: 999px;
+        }
+        .badge.verified { background: rgba(124,148,115,0.15); color: #4d6144; }
+        .badge.unverified { background: rgba(199,154,75,0.15); color: var(--gold-deep); }
+        .badge.member-since { background: var(--bg-cream); color: rgba(42,22,32,0.6); }
+
+        .progress-wrap { margin-top: 14px; position: relative; z-index: 1; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(42,22,32,0.55); margin-bottom: 5px; }
+        .progress-bar-bg { height: 7px; border-radius: 999px; background: var(--bg-cream); overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold), var(--berry)); transition: width .4s ease; }
+
+        /* ============================================
+           TABS
+        ============================================ */
+        .tabs {
+            display: flex; gap: 4px; margin-bottom: 20px;
+            background: var(--surface); border-radius: 16px; padding: 6px;
+            box-shadow: var(--shadow); overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1; white-space: nowrap; padding: 11px 16px; border-radius: 11px;
+            font-size: 13.5px; font-weight: 600; color: rgba(42,22,32,0.5);
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: var(--transition);
+        }
+        .tab-btn.active { background: var(--berry); color: var(--text-light); }
+        .tab-btn:not(.active):hover { background: var(--bg-cream); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn .25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        /* ============================================
+           CARD / FORM
+        ============================================ */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow);
+            padding: 28px 30px;
+        }
+        .card-title { font-size: 16px; margin-bottom: 4px; }
+        .card-subtitle { font-size: 12.5px; color: rgba(42,22,32,0.5); margin-bottom: 22px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper .input-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: rgba(42,22,32,0.4); font-size: 15px;
+        }
+        .input-wrapper input, .input-wrapper textarea, .input-wrapper select {
+            width: 100%; padding: 12px 16px 12px 44px;
+            border: 1.5px solid var(--line); border-radius: 12px;
+            font-size: 14.5px; font-family: inherit; color: var(--text-dark);
+            background: var(--bg-cream); transition: var(--transition); outline: none;
+        }
+        .input-wrapper textarea { resize: vertical; min-height: 70px; padding-left: 16px; }
+        .input-wrapper input:focus, .input-wrapper textarea:focus, .input-wrapper select:focus {
+            border-color: var(--berry); background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(142,46,59,0.08);
+        }
+        .input-wrapper input:disabled { opacity: .6; cursor: not-allowed; }
+        .input-wrapper input.no-icon, .input-wrapper select.no-icon { padding-left: 16px; }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 13px 30px; background: linear-gradient(135deg, var(--berry) 0%, var(--berry-deep) 100%);
+            color: var(--text-light); border-radius: 12px; font-size: 15px; font-weight: 700;
+            transition: var(--transition);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(142,46,59,0.35); }
+        .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-outline {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 13px 30px; background: transparent; border: 1.5px solid var(--line);
+            color: var(--text-dark); border-radius: 12px; font-size: 15px; font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-outline:hover { border-color: var(--berry); color: var(--berry); }
+
+        .spinner-sm {
+            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-primary.loading .spinner-sm { display: inline-block; }
+        .btn-primary.loading .btn-label { display: none; }
+
+        .alert {
+            padding: 12px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 500;
+            margin-bottom: 18px; display: none;
+        }
+        .alert.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+        .alert.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; display: block; }
+
+        /* ============================================
+           PREFERENCES (toggle switches)
+        ============================================ */
+        .pref-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0; border-bottom: 1px solid var(--line);
+        }
+        .pref-row:last-child { border-bottom: none; }
+        .pref-text .pref-title { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
+        .pref-text .pref-desc { font-size: 12.5px; color: rgba(42,22,32,0.55); }
+        .switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch-track {
+            position: absolute; inset: 0; background: var(--line); border-radius: 999px; cursor: pointer; transition: var(--transition);
+        }
+        .switch-track::before {
+            content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px;
+            background: var(--surface); border-radius: 50%; transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        .switch input:checked + .switch-track { background: var(--pistachio); }
+        .switch input:checked + .switch-track::before { transform: translateX(20px); }
+
+        .info-strip {
+            display: flex; gap: 18px; flex-wrap: wrap; margin-top: 6px; font-size: 12px; color: rgba(42,22,32,0.5);
+        }
+        .info-strip span { display: flex; align-items: center; gap: 5px; }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+            .hero-card { flex-direction: column; text-align: center; }
+            .badge-row { justify-content: center; }
+            .tab-btn span.tab-label { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <a href="/home/" class="brand">
+            <div class="brand-mark">🍰</div>
+            সুবাস বেকারি
+        </a>
+        <div class="topbar-actions">
+            <a href="/home/"><i class="fas fa-store"></i> শপে ফিরুন</a>
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+        </div>
+    </header>
+
+    <main class="page-wrap">
+
+        <!-- Hero -->
+        <div class="hero-card">
+            <div class="avatar-wrap" id="avatarWrap">
+                <div class="avatar" id="avatar">
+                    U
+                    <div class="avatar-hover-overlay"><i class="fas fa-camera"></i></div>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*">
+            </div>
+            <div class="hero-info">
+                <h1 id="heroName">লোড হচ্ছে…</h1>
+                <div class="email" id="heroEmail"></div>
+                <div class="badge-row">
+                    <span class="badge unverified" id="verifyBadge"><i class="fas fa-circle"></i> যাচাই হয়নি</span>
+                    <span class="badge member-since" id="memberSince"><i class="fas fa-calendar"></i> সদস্য যোগদান —</span>
+                </div>
+                <div class="progress-wrap">
+                    <div class="progress-label">
+                        <span>প্রোফাইল সম্পূর্ণতা</span>
+                        <span id="progressPct">০%</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar Modal (Facebook-style) -->
+        <div class="avatar-modal-overlay" id="avatarModalOverlay">
+            <div class="avatar-modal">
+                <div class="avatar-modal-head">
+                    <h3>প্রোফাইল ছবি</h3>
+                    <button class="avatar-modal-close" id="avatarModalClose"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="avatar-modal-preview">
+                    <div class="big-avatar" id="bigAvatar">U</div>
+                </div>
+                <div class="avatar-modal-actions">
+                    <button class="avatar-modal-action-btn" id="modalUploadBtn">
+                        <i class="fas fa-camera"></i> নতুন ছবি আপলোড করুন
+                    </button>
+                    <button class="avatar-modal-action-btn danger" id="modalRemoveBtn">
+                        <i class="fas fa-trash"></i> ছবি সরান
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="info"><i class="fas fa-user"></i> <span class="tab-label">প্রোফাইল তথ্য</span></button>
+            <button class="tab-btn" data-tab="security"><i class="fas fa-lock"></i> <span class="tab-label">নিরাপত্তা</span></button>
+            <button class="tab-btn" data-tab="prefs"><i class="fas fa-bell"></i> <span class="tab-label">পছন্দসমূহ</span></button>
+        </div>
+
+        <!-- Tab: Profile Info -->
+        <div class="tab-panel active" id="tab-info">
+            <div class="card">
+                <div class="card-title">ব্যক্তিগত তথ্য</div>
+                <div class="card-subtitle">এই তথ্য আপনার অর্ডার ও ডেলিভারিতে ব্যবহৃত হবে</div>
+                <div id="infoAlert"></div>
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>প্রথম নাম</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" name="first_name" id="first_name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>শেষ নাম</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" name="last_name" id="last_name">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ইউজারনেম</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at input-icon"></i>
+                                <input type="text" id="username" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ইমেইল</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" id="email" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>মোবাইল নম্বর</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" name="phone" id="phone" placeholder="017XXXXXXXX">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>জন্মতারিখ</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-birthday-cake input-icon"></i>
+                                <input type="date" name="date_of_birth" id="date_of_birth">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>ঠিকানা</label>
+                        <div class="input-wrapper">
+                            <textarea name="address" id="address" placeholder="বাসা/রোড/এলাকা"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>শহর</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-city input-icon"></i>
+                                <input type="text" name="city" id="city">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>বিভাগ / রাজ্য</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-map input-icon"></i>
+                                <input type="text" name="state" id="state">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>পোস্টাল কোড</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-map-pin input-icon"></i>
+                                <input type="text" name="postal_code" id="postal_code">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>দেশ</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-flag input-icon"></i>
+                                <input type="text" name="country" id="country">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="saveProfileBtn">
+                        <span class="spinner-sm"></span>
+                        <span class="btn-label"><i class="fas fa-save"></i> সংরক্ষণ করুন</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab: Security -->
+        <div class="tab-panel" id="tab-security">
+            <div class="card">
+                <div class="card-title">পাসওয়ার্ড পরিবর্তন</div>
+                <div class="card-subtitle">নিরাপত্তার জন্য নিয়মিত পাসওয়ার্ড পরিবর্তন করুন</div>
+                <div id="pwAlert"></div>
+                <form id="pwForm">
+                    <div class="form-group">
+                        <label>বর্তমান পাসওয়ার্ড</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" name="old_password" id="old_password" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>নতুন পাসওয়ার্ড</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-key input-icon"></i>
+                                <input type="password" name="new_password" id="new_password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>নিশ্চিত করুন</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-check-circle input-icon"></i>
+                                <input type="password" name="new_password2" id="new_password2" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="savePwBtn">
+                        <span class="spinner-sm"></span>
+                        <span class="btn-label"><i class="fas fa-shield-alt"></i> পাসওয়ার্ড পরিবর্তন করুন</span>
+                    </button>
+                </form>
+
+                <div class="info-strip" style="margin-top:26px; border-top:1px solid var(--line); padding-top:18px;">
+                    <span><i class="fas fa-envelope-circle-check"></i> ইমেইল: <strong id="secEmailStatus">—</strong></span>
+                    <span id="resendWrap" style="display:none;"><button id="resendVerifyBtn" style="color:var(--berry); font-weight:600; text-decoration:underline;">ভেরিফিকেশন ইমেইল আবার পাঠান</button></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Preferences -->
+        <div class="tab-panel" id="tab-prefs">
+            <div class="card">
+                <div class="card-title">নোটিফিকেশন পছন্দসমূহ</div>
+                <div class="card-subtitle">কীভাবে আপনার সাথে যোগাযোগ করা হবে তা নিয়ন্ত্রণ করুন</div>
+                <div id="prefAlert"></div>
+
+                <div class="pref-row">
+                    <div class="pref-text">
+                        <div class="pref-title">ইমেইল নোটিফিকেশন</div>
+                        <div class="pref-desc">অর্ডার আপডেট, অফার ও নিউজলেটার ইমেইলে পাবেন</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="email_notifications">
+                        <span class="switch-track"></span>
+                    </label>
+                </div>
+                <div class="pref-row">
+                    <div class="pref-text">
+                        <div class="pref-title">SMS নোটিফিকেশন</div>
+                        <div class="pref-desc">গুরুত্বপূর্ণ অর্ডার আপডেট SMS-এ পাবেন</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="sms_notifications">
+                        <span class="switch-track"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================
+        // Auth guard — must be logged in to see this page
+        // ============================================
+        let accessToken = localStorage.getItem('access_token');
+        let refreshToken = localStorage.getItem('refresh_token');
+        if (!accessToken) {
+            window.location.href = '/login/';
+        }
+
+        let profileData = {};
+
+        // ============================================
+        // Authenticated fetch with one-time auto-refresh on 401
+        // ============================================
+        async function authFetch(url, options = {}) {
+            options.headers = Object.assign({}, options.headers, {
+                'Authorization': 'Bearer ' + accessToken,
+            });
+            let res = await fetch(url, options);
+            if (res.status === 401 && refreshToken) {
+                const refreshed = await tryRefresh();
+                if (refreshed) {
+                    options.headers['Authorization'] = 'Bearer ' + accessToken;
+                    res = await fetch(url, options);
+                } else {
+                    localStorage.clear();
+                    window.location.href = '/login/';
+                }
+            }
+            return res;
+        }
+
+        async function tryRefresh() {
+            try {
+                const res = await fetch('/api/auth/refresh/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
+                if (!res.ok) return false;
+                const data = await res.json();
+                const tokens = data.data || data;
+                accessToken = tokens.access;
+                if (tokens.refresh) refreshToken = tokens.refresh;
+                localStorage.setItem('access_token', accessToken);
+                if (tokens.refresh) localStorage.setItem('refresh_token', refreshToken);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function showAlert(containerId, message, type) {
+            const el = document.getElementById(containerId);
+            el.innerHTML = `<div class="alert ${type}">${message}</div>`;
+            if (type === 'success') setTimeout(() => { el.innerHTML = ''; }, 4000);
+        }
+
+        // ============================================
+        // Load profile
+        // ============================================
+        async function loadProfile() {
+            try {
+                const res = await authFetch('/api/auth/profile/');
+                const data = await res.json();
+                profileData = data.data || data;
+                renderHero();
+                fillForm();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function initials(name) {
+            if (!name) return 'U';
+            return name.trim()[0].toUpperCase();
+        }
+
+        function renderHero() {
+            const p = profileData;
+            document.getElementById('heroName').textContent = p.full_name || p.username || '';
+            document.getElementById('heroEmail').textContent = p.email || '';
+            const initialsText = initials(p.full_name || p.username);
+            const avatarEl = document.getElementById('avatar');
+            const bigAvatarEl = document.getElementById('bigAvatar');
+            const removeBtn = document.getElementById('modalRemoveBtn');
+
+            if (p.profile_picture) {
+                avatarEl.innerHTML = `<img src="${p.profile_picture}" alt=""><div class="avatar-hover-overlay"><i class="fas fa-camera"></i></div>`;
+                bigAvatarEl.innerHTML = `<img src="${p.profile_picture}" alt="">`;
+                removeBtn.style.display = 'flex';
+            } else {
+                avatarEl.innerHTML = `${initialsText}<div class="avatar-hover-overlay"><i class="fas fa-camera"></i></div>`;
+                bigAvatarEl.textContent = initialsText;
+                removeBtn.style.display = 'none';
+            }
+
+            const verifyBadge = document.getElementById('verifyBadge');
+            if (p.is_email_verified) {
+                verifyBadge.className = 'badge verified';
+                verifyBadge.innerHTML = '<i class="fas fa-check-circle"></i> ইমেইল ভেরিফাইড';
+            } else {
+                verifyBadge.className = 'badge unverified';
+                verifyBadge.innerHTML = '<i class="fas fa-exclamation-circle"></i> ইমেইল ভেরিফাই হয়নি';
+            }
+
+            if (p.created_at) {
+                const d = new Date(p.created_at);
+                const opts = { year: 'numeric', month: 'long' };
+                document.getElementById('memberSince').innerHTML =
+                    `<i class="fas fa-calendar"></i> সদস্য যোগদান ${d.toLocaleDateString('bn-BD', opts)}`;
+            }
+
+            const pct = p.is_profile_complete ? 100 : computeCompleteness(p);
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressPct').textContent = pct + '%';
+
+            document.getElementById('secEmailStatus').textContent = p.is_email_verified ? 'ভেরিফাইড ✅' : 'ভেরিফাই করা হয়নি ⚠️';
+            document.getElementById('resendWrap').style.display = p.is_email_verified ? 'none' : 'inline-flex';
+        }
+
+        function computeCompleteness(p) {
+            const fields = [p.first_name, p.last_name, p.phone, p.address, p.city];
+            const filled = fields.filter(f => f && f.trim()).length;
+            return Math.round((filled / fields.length) * 100);
+        }
+
+        function fillForm() {
+            const p = profileData;
+            document.getElementById('first_name').value = p.first_name || '';
+            document.getElementById('last_name').value = p.last_name || '';
+            document.getElementById('username').value = p.username || '';
+            document.getElementById('email').value = p.email || '';
+            document.getElementById('phone').value = p.phone || '';
+            document.getElementById('date_of_birth').value = p.date_of_birth || '';
+            document.getElementById('address').value = p.address || '';
+            document.getElementById('city').value = p.city || '';
+            document.getElementById('state').value = p.state || '';
+            document.getElementById('postal_code').value = p.postal_code || '';
+            document.getElementById('country').value = p.country || '';
+            document.getElementById('email_notifications').checked = !!p.email_notifications;
+            document.getElementById('sms_notifications').checked = !!p.sms_notifications;
+        }
+
+        // ============================================
+        // Save profile
+        // ============================================
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveProfileBtn');
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            const payload = {
+                first_name: document.getElementById('first_name').value.trim(),
+                last_name: document.getElementById('last_name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                date_of_birth: document.getElementById('date_of_birth').value || null,
+                address: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                postal_code: document.getElementById('postal_code').value.trim(),
+                country: document.getElementById('country').value.trim(),
+            };
+
+            try {
+                const res = await authFetch('/api/auth/profile/', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    profileData = Object.assign({}, profileData, data.data || data);
+                    renderHero();
+                    showAlert('infoAlert', '✅ প্রোফাইল সফলভাবে সংরক্ষিত হয়েছে।', 'success');
+                } else {
+                    const msg = data.message || (data.detail) || 'প্রোফাইল সংরক্ষণ করা যায়নি।';
+                    showAlert('infoAlert', '❌ ' + msg, 'error');
+                }
+            } catch (err) {
+                showAlert('infoAlert', '❌ নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        });
+
+        // ============================================
+        // Avatar modal (Facebook-style: click avatar → modal →
+        // upload or remove)
+        // ============================================
+        const avatarModalOverlay = document.getElementById('avatarModalOverlay');
+
+        function openAvatarModal(){ avatarModalOverlay.classList.add('open'); }
+        function closeAvatarModal(){ avatarModalOverlay.classList.remove('open'); }
+
+        document.getElementById('avatarWrap').addEventListener('click', openAvatarModal);
+        document.getElementById('avatarModalClose').addEventListener('click', closeAvatarModal);
+        avatarModalOverlay.addEventListener('click', (e) => {
+            if (e.target === avatarModalOverlay) closeAvatarModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAvatarModal();
+        });
+
+        document.getElementById('modalUploadBtn').addEventListener('click', () => {
+            document.getElementById('avatarInput').click();
+        });
+
+        document.getElementById('avatarInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const fd = new FormData();
+            fd.append('profile_picture', file);
+
+            try {
+                const res = await authFetch('/api/auth/profile/', { method: 'PATCH', body: fd });
+                const data = await res.json();
+                if (res.ok) {
+                    profileData = Object.assign({}, profileData, data.data || data);
+                    renderHero();
+                    closeAvatarModal();
+                    showAlert('infoAlert', '✅ প্রোফাইল ছবি আপডেট হয়েছে।', 'success');
+                } else {
+                    showAlert('infoAlert', '❌ ছবি আপলোড ব্যর্থ হয়েছে।', 'error');
+                }
+            } catch (err) {
+                showAlert('infoAlert', '❌ নেটওয়ার্ক সমস্যা।', 'error');
+            } finally {
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('modalRemoveBtn').addEventListener('click', async () => {
+            if (!confirm('আপনি কি নিশ্চিত প্রোফাইল ছবি সরাতে চান?')) return;
+
+            const btn = document.getElementById('modalRemoveBtn');
+            btn.disabled = true;
+
+            try {
+                const res = await authFetch('/api/auth/profile/picture/', { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    profileData.profile_picture = null;
+                    renderHero();
+                    closeAvatarModal();
+                    showAlert('infoAlert', '✅ প্রোফাইল ছবি সরানো হয়েছে।', 'success');
+                } else {
+                    showAlert('infoAlert', '❌ ' + (data.message || 'ছবি সরানো যায়নি।'), 'error');
+                }
+            } catch (err) {
+                showAlert('infoAlert', '❌ নেটওয়ার্ক সমস্যা।', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================
+        // Change password
+        // ============================================
+        document.getElementById('pwForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPw = document.getElementById('new_password').value;
+            const newPw2 = document.getElementById('new_password2').value;
+            if (newPw !== newPw2) {
+                showAlert('pwAlert', '❌ নতুন পাসওয়ার্ড দুটো মিলছে না।', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('savePwBtn');
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            try {
+                const res = await authFetch('/api/auth/change-password/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        old_password: document.getElementById('old_password').value,
+                        new_password: newPw,
+                        new_password2: newPw2,
+                    }),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showAlert('pwAlert', '✅ পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।', 'success');
+                    document.getElementById('pwForm').reset();
+                } else {
+                    const msg = data.message ||
+                        (data.errors && Object.values(data.errors)[0]) ||
+                        'পাসওয়ার্ড পরিবর্তন ব্যর্থ হয়েছে।';
+                    showAlert('pwAlert', '❌ ' + (Array.isArray(msg) ? msg.join(' ') : msg), 'error');
+                }
+            } catch (err) {
+                showAlert('pwAlert', '❌ নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        });
+
+        // ============================================
+        // Resend verification email
+        // ============================================
+        document.getElementById('resendVerifyBtn').addEventListener('click', async () => {
+            try {
+                const res = await authFetch('/api/auth/resend-verification/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: profileData.email }),
+                });
+                const data = await res.json();
+                showAlert('pwAlert', (data.success ? '✅ ' : '❌ ') + (data.message || ''), data.success ? 'success' : 'error');
+            } catch (err) {
+                showAlert('pwAlert', '❌ নেটওয়ার্ক সমস্যা।', 'error');
+            }
+        });
+
+        // ============================================
+        // Preferences toggle — saves immediately on change
+        // ============================================
+        ['email_notifications', 'sms_notifications'].forEach(id => {
+            document.getElementById(id).addEventListener('change', async (e) => {
+                try {
+                    const res = await authFetch('/api/auth/profile/', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ [id]: e.target.checked }),
+                    });
+                    if (res.ok) {
+                        showAlert('prefAlert', '✅ পছন্দ সংরক্ষিত হয়েছে।', 'success');
+                    } else {
+                        showAlert('prefAlert', '❌ সংরক্ষণ করা যায়নি।', 'error');
+                        e.target.checked = !e.target.checked;
+                    }
+                } catch (err) {
+                    e.target.checked = !e.target.checked;
+                }
+            });
+        });
+
+        // ============================================
+        // Tabs
+        // ============================================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ============================================
+        // Logout
+        // ============================================
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await authFetch('/api/auth/logout/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: refreshToken }),
+                });
+            } catch (e) {}
+            localStorage.clear();
+            window.location.href = '/login/';
+        });
+
+        // ============================================
+        // Init
+        // ============================================
+        loadProfile();
+    </script>
+
+</body>
+</html>
